@@ -2,11 +2,12 @@
  * Public data layer — single source of truth for what the public site renders.
  *
  * - Without Firebase configured: returns the bundled local data (identical output).
- * - With Firebase configured: seeds Firestore from the bundled data on first run,
- *   then streams live via onSnapshot so /admin edits appear without a redeploy.
+ * - With Firebase configured: streams live via onSnapshot so /admin edits appear
+ *   without a redeploy. Seeding happens server-side (api/admin/seed.js) after
+ *   the first admin sign-in.
  *
- * Firebase modules are loaded lazily so the public bundle stays small when the
- * VITE_FIREBASE_* env vars aren't present.
+ * Firestore reads only — all writes go through the password-protected
+ * /api/admin/* serverless functions.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { db, firebaseEnabled, initFirebase } from '../lib/firebase';
@@ -24,90 +25,6 @@ const priceToNumber = (p) => parseInt(String(p ?? '').replace(/[^0-9]/g, ''), 10
 const taka = (n) => `৳${Number(n) || 0}`;
 const docOf = (snap) => ({ id: snap.id, ...snap.data() });
 
-/* ------------------------------ Seeding ------------------------------ */
-
-let seedPromise = null;
-
-/** Push bundled data into Firestore once, if the collections are empty. */
-export function ensureSeeded() {
-  if (!firebaseEnabled) return Promise.resolve();
-  if (!seedPromise) {
-    seedPromise = initFirebase()
-      .then(async () => {
-        if (!db) return;
-        await seed();
-      })
-      .catch((err) => {
-        console.error('Firestore seed failed', err);
-        seedPromise = null;
-      });
-  }
-  return seedPromise;
-}
-
-async function seed() {
-  const { collection, doc, getDocs, orderBy, query, setDoc, writeBatch } = await getFs();
-  const batch = writeBatch(db);
-
-  const categoriesSnap = await getDocs(query(collection(db, 'categories'), orderBy('order')));
-  if (categoriesSnap.size === 0) {
-    MENU_CATEGORIES.forEach((c, ci) => {
-      batch.set(doc(db, 'categories', c.id), { name: c.label, slug: c.id, order: ci });
-      c.items.forEach((it, ii) => {
-        batch.set(doc(db, 'menuItems', `seed-${c.id}-${ii}`), {
-          name: it.name,
-          price: priceToNumber(it.price),
-          category: c.id,
-          imageUrl: it.image,
-          description: it.desc,
-          available: true,
-          order: ii,
-        });
-      });
-    });
-  }
-
-  const gallerySnap = await getDocs(query(collection(db, 'galleryImages'), orderBy('order')));
-  if (gallerySnap.size === 0) {
-    GALLERY_FALLBACK.forEach((g, i) => {
-      batch.set(doc(db, 'galleryImages', `seed-g-${i}`), {
-        imageUrl: g.src,
-        caption: g.alt,
-        order: i,
-      });
-    });
-  }
-
-  const testimonialsSnap = await getDocs(query(collection(db, 'testimonials'), orderBy('order')));
-  if (testimonialsSnap.size === 0) {
-    TESTIMONIALS.forEach((t, i) => {
-      batch.set(doc(db, 'testimonials', `seed-t-${i}`), {
-        customerName: t.name,
-        text: t.text,
-        rating: 5,
-        role: t.role,
-        branch: t.branch,
-        imageUrl: '',
-        order: i,
-      });
-    });
-  }
-
-  const biSnap = await getDoc(doc(db, 'businessInfo', 'main'));
-  if (!biSnap.exists()) {
-    batch.set(doc(db, 'businessInfo', 'main'), {
-      hours: SITE.hours,
-      phone: SITE.phone,
-      email: SITE.email,
-      facebookUrl: SITE.socials.facebook.url,
-      instagramUrl: SITE.socials.instagram.url,
-      outletAddress: '',
-    });
-  }
-
-  await batch.commit();
-}
-
 /* --------------------------- Live collection -------------------------- */
 
 /**
@@ -122,7 +39,7 @@ function useCollectionData(collectionName, { fallback, map = docOf } = {}) {
     if (!firebaseEnabled) return undefined;
     let unsub = null;
     let cancelled = false;
-    ensureSeeded().then(async () => {
+    initFirebase().then(async () => {
       if (cancelled || !db) return;
       const { collection, orderBy, query, onSnapshot } = await getFs();
       const q = query(collection(db, collectionName), orderBy('order', 'asc'));
@@ -237,7 +154,7 @@ export function useBusinessInfo() {
     if (!firebaseEnabled) return undefined;
     let unsub = null;
     let cancelled = false;
-    ensureSeeded().then(async () => {
+    initFirebase().then(async () => {
       if (cancelled || !db) return;
       const { collection, doc: fsDoc, onSnapshot } = await getFs();
       unsub = onSnapshot(

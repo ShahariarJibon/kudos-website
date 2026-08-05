@@ -19,23 +19,22 @@ export default function LoginPage() {
   useNoIndex();
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim() || password.length < 6) {
-      toast.error('Enter a valid email and password');
+    if (!password) {
+      toast.error('Enter the admin password');
       return;
     }
     setBusy(true);
     try {
-      await login(email.trim(), password);
+      await login(password.trim());
       toast.success('Welcome back!');
       navigate('/admin', { replace: true });
     } catch (err) {
-      toast.error(err?.code === 'auth/invalid-credential' ? 'Invalid email or password' : err.message);
+      toast.error(err?.code === 'auth/invalid-credential' ? 'Invalid password' : err.message);
     } finally {
       setBusy(false);
     }
@@ -51,17 +50,7 @@ export default function LoginPage() {
             <p className="mt-1 text-sm text-white/85">Staff panel — menu &amp; content management</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-5 px-8 py-8">
-            <Field label="Email" required>
-              <TextInput
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="staff@kudos.com.bd"
-                required
-              />
-            </Field>
-            <Field label="Password" required>
+            <Field label="Admin password" required>
               <TextInput
                 type="password"
                 autoComplete="current-password"
@@ -75,9 +64,9 @@ export default function LoginPage() {
               {busy ? 'Signing in…' : 'Sign In'}
             </button>
             <p className="rounded-xl bg-orange/10 px-4 py-3 text-center text-xs leading-relaxed text-neutral-600">
-              Default sign-in: <span className="font-semibold text-maroon">admin@gmail.com</span> /{' '}
-              <span className="font-semibold text-maroon">admin123</span>. Change it anytime from{' '}
-              <span className="font-semibold text-maroon">Admin → Settings</span>.
+              One shared password — set as the{' '}
+              <span className="font-semibold text-maroon">ADMIN_PASSWORD</span> environment variable
+              in Vercel. No user accounts.
             </p>
           </form>
         </div>

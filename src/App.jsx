@@ -32,7 +32,6 @@ const AdminCategories = lazy(() => import('./pages/admin/CategoriesPage'));
 const AdminGallery = lazy(() => import('./pages/admin/GalleryPage'));
 const AdminTestimonials = lazy(() => import('./pages/admin/TestimonialsPage'));
 const AdminBusinessInfo = lazy(() => import('./pages/admin/BusinessInfoPage'));
-const AdminSettings = lazy(() => import('./pages/admin/SettingsPage'));
 
 function PageLoader() {
   return (
@@ -64,7 +63,6 @@ function AdminRoutes() {
           <Route path="gallery" element={<AdminGallery />} />
           <Route path="testimonials" element={<AdminTestimonials />} />
           <Route path="business-info" element={<AdminBusinessInfo />} />
-          <Route path="settings" element={<AdminSettings />} />
           <Route path="orders" element={<DashboardPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />

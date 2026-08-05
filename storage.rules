@@ -1,23 +1,13 @@
 rules_version = '2';
 
-// Image uploads (menu + gallery) only go into the menu/ and gallery/ folders
-// and must be image files under 5 MB. Writes are open because the admin
-// panel uses its own built-in login (no Firebase Auth user session).
+// Any file is readable by everyone. Uploads are performed ONLY server-side by
+// the Firebase Admin SDK (Vercel /api/admin/upload), which bypasses these
+// rules, so direct client uploads are denied.
 service firebase.storage {
   match /b/{bucket}/o {
-    function isValidImage() {
-      return request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
-    }
-
-    match /menu/{allPaths=**} {
+    match /{allPaths=**} {
       allow read: if true;
-      allow write: if isValidImage();
-    }
-
-    match /gallery/{allPaths=**} {
-      allow read: if true;
-      allow write: if isValidImage();
+      allow write: if false;
     }
   }
 }

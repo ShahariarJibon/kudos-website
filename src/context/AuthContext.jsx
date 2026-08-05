@@ -1,44 +1,36 @@
 import { createContext, useContext, useState } from 'react';
-import {
-  clearSession,
-  createSession,
-  getSession,
-  verifyAdminLogin,
-} from '../services/adminAuth';
+import { clearAdminSession, hasAdminSession, saveAdminPassword } from '../services/adminAuth';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const s = getSession();
-    return s ? { email: s.email } : null;
-  });
+  const [user, setUser] = useState(() => (hasAdminSession() ? { email: 'admin' } : null));
 
-  const login = async (email, password) => {
-    const ok = await verifyAdminLogin(email, password);
-    if (!ok) {
-      const err = new Error('Invalid email or password');
+  const login = async (password) => {
+    const res = await fetch('/api/admin/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (res.status === 401) {
+      const err = new Error('Invalid password');
       err.code = 'auth/invalid-credential';
       throw err;
     }
-    const s = createSession(email.trim());
-    setUser({ email: s.email });
-    return s;
-  };
-
-  const updateUserEmail = (email) => {
-    const s = createSession(email);
-    setUser({ email: s.email });
-    return s;
+    if (!res.ok) {
+      throw new Error('Admin API is unavailable — check the server configuration');
+    }
+    saveAdminPassword(password);
+    setUser({ email: 'admin' });
   };
 
   const logout = async () => {
-    clearSession();
+    clearAdminSession();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, initializing: false, login, updateUserEmail, logout, enabled: true }}>
+    <AuthContext.Provider value={{ user, initializing: false, login, logout, enabled: true }}>
       {children}
     </AuthContext.Provider>
   );

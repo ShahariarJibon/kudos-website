@@ -1,34 +1,14 @@
 rules_version = '2';
 
 // Public site (menu, gallery, testimonials, business info) is readable by everyone.
-// Writes are open because the admin panel has its own built-in login
-// (default admin@gmail.com / admin123, changeable in Admin → Settings) —
-// there is no Firebase Auth user session. Tighten this by binding writes
-// to a secret document or Firebase Auth if you need stricter control later.
+// All writes are performed ONLY server-side by the Firebase Admin SDK
+// (Vercel /api/admin/* functions), which bypasses these rules entirely, so
+// direct client writes are denied.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /menuItems/{id} {
+    match /{document=**} {
       allow read: if true;
-      allow write: if true;
-    }
-    match /categories/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-    match /galleryImages/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-    match /testimonials/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-    match /businessInfo/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-    match /users/{userId} {
-      allow read, write: if false;
+      allow write: if false;
     }
   }
 }

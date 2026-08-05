@@ -93,8 +93,9 @@ export function LoadError({ message, onRetry }) {
       <p className="font-heading text-base font-bold">Could not load data</p>
       <p className="mt-1 break-words text-sm leading-relaxed">{message}</p>
       <p className="mt-3 text-xs leading-relaxed text-redOrange/80">
-        Check that the six VITE_FIREBASE_* variables are set in Vercel and the project was
-        redeployed, Firestore is enabled, and the rules in firestore.rules are published.
+        The admin API could not reach Firestore/Storage. Check that ADMIN_PASSWORD and
+        FIREBASE_SERVICE_ACCOUNT_KEY are set in Vercel (and the project was redeployed), that
+        you&apos;re signed in with the shared password, and that the rules in firestore.rules are published.
       </p>
       {onRetry && (
         <button

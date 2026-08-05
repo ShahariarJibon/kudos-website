@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Spinner } from './AdminUI';
 
-/** Blocks /admin routes until a Firebase auth session exists. */
+/** Blocks /admin routes until a password session exists. */
 export default function RequireAuth({ children }) {
   const { user, initializing } = useAuth();
 

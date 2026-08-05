@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { db, initFirebase } from '../../lib/firebase';
+import { db, firebaseEnabled, initFirebase } from '../../lib/firebase';
 import { AdminPageHeader, Spinner } from '../../components/admin/AdminUI';
-import { ensureSeeded } from '../../services/publicData';
-import { isAdminReady } from '../../services/adminService';
+import { seedDatabase } from '../../services/adminService';
 
 const CARDS = [
   { to: '/admin/menu-items', label: 'Menu Items', icon: 'menu', countKey: 'menuItems', hint: 'Products shown on the public menu' },
@@ -27,7 +26,7 @@ export default function DashboardPage() {
   const [seeding, setSeeding] = useState(true);
 
   useEffect(() => {
-    if (!isAdminReady()) {
+    if (!firebaseEnabled) {
       setSeeding(false);
       return undefined;
     }
@@ -40,7 +39,9 @@ export default function DashboardPage() {
         onSnapshot(collection(db, 'galleryImages'), (s) => setCounts((c) => ({ ...c, galleryImages: s.size }))),
         onSnapshot(collection(db, 'testimonials'), (s) => setCounts((c) => ({ ...c, testimonials: s.size }))),
       ];
-      ensureSeeded().finally(() => setSeeding(false));
+      seedDatabase()
+        .catch((err) => console.warn('[kudos] seed skipped:', err?.message))
+        .finally(() => setSeeding(false));
     });
     return () => unsubs.forEach((u) => u());
   }, []);
@@ -54,7 +55,7 @@ export default function DashboardPage() {
         subtitle="Manage everything your customers see — changes appear on the public site instantly."
       />
 
-      {!isAdminReady() && (
+      {!firebaseEnabled && (
         <div className="mt-8 rounded-2xl bg-redOrange/10 p-6 text-redOrange">
           <p className="font-heading font-bold">Firebase is not configured</p>
           <p className="mt-1 text-sm leading-relaxed">
@@ -62,9 +63,10 @@ export default function DashboardPage() {
             (console.firebase.google.com), add a web app, enable Firestore and
             Storage, publish the rules in <span className="font-semibold">firestore.rules</span> and{' '}
             <span className="font-semibold">storage.rules</span>, then set the six{' '}
-            <span className="font-semibold">VITE_FIREBASE_*</span> variables in Vercel → Settings →
-            Environment Variables and redeploy. Firebase Authentication is not needed — the panel
-            uses its own login.
+            <span className="font-semibold">VITE_FIREBASE_*</span> variables plus{' '}
+            <span className="font-semibold">ADMIN_PASSWORD</span> and{' '}
+            <span className="font-semibold">FIREBASE_SERVICE_ACCOUNT_KEY</span> in Vercel → Settings →
+            Environment Variables and redeploy. Firebase Authentication is not needed.
           </p>
         </div>
       )}
@@ -86,9 +88,7 @@ export default function DashboardPage() {
                   </svg>
                 </span>
                 <span className="font-heading text-3xl font-extrabold text-maroon">
-                  {card.countKey === 'business'
-                    ? '—'
-                    : countOf(card.countKey) ?? '—'}
+                  {card.countKey === 'business' ? '—' : countOf(card.countKey) ?? '—'}
                 </span>
               </div>
               <h2 className="mt-4 font-heading text-base font-bold text-maroon group-hover:text-orange">
@@ -103,11 +103,11 @@ export default function DashboardPage() {
       <div className="mt-10 rounded-2xl bg-maroon p-6 text-white">
         <h2 className="font-heading text-lg font-bold">Staff access</h2>
         <p className="mt-2 text-sm leading-relaxed text-white/80">
-          Sign in at <span className="font-semibold text-orange">/admin/login</span> with your admin
-          credentials (default <span className="font-semibold text-orange">admin@gmail.com</span> /{' '}
-          <span className="font-semibold text-orange">admin123</span>). Change them from{' '}
-          <span className="font-semibold text-orange">Settings</span>. The panel is never linked on
-          the public site and is excluded from search indexing.
+          Sign in at <span className="font-semibold text-orange">/admin/login</span> with the single
+          shared password set as <span className="font-semibold text-orange">ADMIN_PASSWORD</span> in
+          Vercel. No user accounts — edits are written server-side with the Firebase Admin SDK and
+          appear on the public site instantly. The panel is never linked on the public site and is
+          excluded from search indexing.
         </p>
       </div>
     </div>

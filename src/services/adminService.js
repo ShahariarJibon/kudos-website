@@ -1,22 +1,10 @@
 /**
- * Admin data service — Firestore CRUD + Firebase Storage uploads used by /admin.
- * Every call awaits Firebase init (lazy bootstrap) first.
+ * Admin data service — all calls go through the password-protected Vercel
+ * serverless functions under /api/admin/* (Firebase Admin SDK server-side).
+ * No direct Firestore/Storage writes happen from the browser anymore.
  */
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  getDoc,
-  orderBy,
-  query,
-  setDoc,
-  updateDoc,
-  writeBatch,
-} from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { db, storage, firebaseEnabled, initFirebase } from '../lib/firebase';
+const API_BASE = '/api/admin';
+const SESSION_KEY = 'kudos-admin-password-v1';
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
@@ -28,181 +16,120 @@ export const slugify = (text) =>
     .replace(/(^-|-$)/g, '')
     .slice(0, 48);
 
-async function ready() {
-  if (!firebaseEnabled) throw new Error('Firebase is not configured');
-  await initFirebase();
-  if (!db) throw new Error('Firebase did not initialize');
+function adminHeaders() {
+  let password = '';
+  try {
+    password = sessionStorage.getItem(SESSION_KEY) || '';
+  } catch {
+    /* non-browser environment */
+  }
+  return {
+    'Content-Type': 'application/json',
+    'x-admin-password': password,
+  };
 }
+
+async function request(path, options = {}) {
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers: adminHeaders() });
+  } catch (err) {
+    throw new Error('Could not reach the admin API — check your connection');
+  }
+
+  if (res.status === 401) {
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+      /* ignore */
+    }
+    window.location.assign('/admin/login');
+    throw new Error('Session expired — sign in again');
+  }
+
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const body = await res.json();
+      if (body?.error) message = body.error;
+    } catch {
+      /* keep status text */
+    }
+    throw new Error(message);
+  }
+
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+const get = (path) => request(path);
+const post = (path, data) => request(path, { method: 'POST', body: JSON.stringify(data || {}) });
+const put = (path, data) => request(path, { method: 'PUT', body: JSON.stringify(data || {}) });
+const del = (path) => request(path, { method: 'DELETE' });
 
 /* ------------------------------ Uploads ------------------------------ */
 
-/** Upload an image file to Storage and return its download URL. */
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      resolve(result.includes('base64,') ? result.split('base64,')[1] : result);
+    };
+    reader.onerror = () => reject(new Error('Could not read the selected file'));
+    reader.readAsDataURL(file);
+  });
+
+/** Upload an image (server-side, via the API) and return its public URL. */
 export async function uploadImage(file, folder = 'menu') {
-  await ready();
   if (!file) throw new Error('No file selected');
   if (!file.type.startsWith('image/')) throw new Error('Please choose an image file');
-  const safeName = file.name.replace(/[^\w.-]/g, '_');
-  const storageRef = ref(storage, `${folder}/${uid()}-${safeName}`);
-  const snap = await uploadBytes(storageRef, file);
-  return getDownloadURL(snap.ref);
+  const data = await fileToBase64(file);
+  const result = await post('/upload', {
+    folder,
+    fileName: file.name,
+    mimeType: file.type,
+    data,
+  });
+  return result.url;
 }
 
 /* ----------------------------- Menu items ----------------------------- */
 
-export async function fetchMenuItems() {
-  await ready();
-  const snap = await getDocs(query(collection(db, 'menuItems'), orderBy('order', 'asc')));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-}
-
-export async function addMenuItem(data) {
-  await ready();
-  await addDoc(collection(db, 'menuItems'), {
-    ...data,
-    imageUrl: data.imageUrl || '',
-    available: data.available !== false,
-    order: Number(data.order) || 0,
-  });
-}
-
-export async function updateMenuItem(id, data) {
-  await ready();
-  if (!id) throw new Error('Missing item id');
-  const patch = { ...data };
-  delete patch.order;
-  if (data.order !== undefined) patch.order = Number(data.order) || 0;
-  await updateDoc(doc(db, 'menuItems', id), patch);
-}
-
-export async function deleteMenuItem(id) {
-  await ready();
-  await deleteDoc(doc(db, 'menuItems', id));
-}
-
-/** Swap `order` between two docs (for up/down reordering). */
-export async function swapOrder(collectionName, idA, orderA, idB, orderB) {
-  await ready();
-  const batch = writeBatch(db);
-  batch.update(doc(db, collectionName, idA), { order: orderB });
-  batch.update(doc(db, collectionName, idB), { order: orderA });
-  await batch.commit();
-}
+export const fetchMenuItems = () => get('/menu-items');
+export const addMenuItem = (data) => post('/menu-items', data);
+export const updateMenuItem = (id, data) => put('/menu-items', { id, ...data });
+export const deleteMenuItem = (id) => del(`/menu-items?id=${encodeURIComponent(id)}`);
 
 /* ----------------------------- Categories ----------------------------- */
 
-export async function fetchCategories() {
-  await ready();
-  const snap = await getDocs(query(collection(db, 'categories'), orderBy('order', 'asc')));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-}
-
-export async function addCategory({ name, slug, order }) {
-  await ready();
-  const clean = slugify(slug || name || '');
-  if (!clean) throw new Error('Category name is required');
-  const exists = await getDoc(doc(db, 'categories', clean));
-  if (exists.exists()) throw new Error('A category with this name already exists');
-  await setDoc(doc(db, 'categories', clean), {
-    name: String(name).trim(),
-    slug: clean,
-    order: Number(order) || 0,
-  });
-  return clean;
-}
-
-export async function updateCategory(id, data) {
-  await ready();
-  const patch = { ...data };
-  delete patch.order;
-  if (data.order !== undefined) patch.order = Number(data.order) || 0;
-  await updateDoc(doc(db, 'categories', id), patch);
-}
-
-export async function deleteCategory(id) {
-  await ready();
-  await deleteDoc(doc(db, 'categories', id));
-}
+export const fetchCategories = () => get('/categories');
+export const addCategory = (data) => post('/categories', data);
+export const updateCategory = (id, data) => put('/categories', { id, ...data });
+export const deleteCategory = (id) => del(`/categories?id=${encodeURIComponent(id)}`);
 
 /* ------------------------------ Gallery ------------------------------- */
 
-export async function fetchGallery() {
-  await ready();
-  const snap = await getDocs(query(collection(db, 'galleryImages'), orderBy('order', 'asc')));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-}
-
-export async function addGalleryImage({ imageUrl, caption, order }) {
-  await ready();
-  await addDoc(collection(db, 'galleryImages'), {
-    imageUrl,
-    caption: caption || '',
-    order: Number(order) || 0,
-  });
-}
-
-export async function deleteGalleryImage(id) {
-  await ready();
-  await deleteDoc(doc(db, 'galleryImages', id));
-}
+export const fetchGallery = () => get('/gallery');
+export const addGalleryImage = (data) => post('/gallery', data);
+export const deleteGalleryImage = (id) => del(`/gallery?id=${encodeURIComponent(id)}`);
 
 /* ----------------------------- Testimonials --------------------------- */
 
-export async function fetchTestimonials() {
-  await ready();
-  const snap = await getDocs(query(collection(db, 'testimonials'), orderBy('order', 'asc')));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-}
-
-export async function addTestimonial(data) {
-  await ready();
-  await addDoc(collection(db, 'testimonials'), {
-    customerName: data.customerName,
-    text: data.text,
-    rating: Number(data.rating) || 5,
-    role: data.role || '',
-    branch: data.branch || '',
-    imageUrl: data.imageUrl || '',
-    order: Number(data.order) || 0,
-  });
-}
-
-export async function updateTestimonial(id, data) {
-  await ready();
-  await updateDoc(doc(db, 'testimonials', id), {
-    customerName: data.customerName,
-    text: data.text,
-    rating: Number(data.rating) || 5,
-    role: data.role || '',
-    branch: data.branch || '',
-    imageUrl: data.imageUrl || '',
-  });
-}
-
-export async function deleteTestimonial(id) {
-  await ready();
-  await deleteDoc(doc(db, 'testimonials', id));
-}
+export const fetchTestimonials = () => get('/testimonials');
+export const addTestimonial = (data) => post('/testimonials', data);
+export const updateTestimonial = (id, data) => put('/testimonials', { id, ...data });
+export const deleteTestimonial = (id) => del(`/testimonials?id=${encodeURIComponent(id)}`);
 
 /* ----------------------------- Business info -------------------------- */
 
-export async function fetchBusinessInfo() {
-  await ready();
-  const snap = await getDoc(doc(db, 'businessInfo', 'main'));
-  return snap.exists() ? snap.data() : {};
-}
-
-export async function saveBusinessInfo(data) {
-  await ready();
-  await setDoc(doc(db, 'businessInfo', 'main'), {
-    hours: Array.isArray(data.hours) ? data.hours : [],
-    phone: data.phone || '',
-    email: data.email || '',
-    facebookUrl: data.facebookUrl || '',
-    instagramUrl: data.instagramUrl || '',
-    outletAddress: data.outletAddress || '',
-  });
-}
+export const fetchBusinessInfo = () => get('/business-info');
+export const saveBusinessInfo = (data) => put('/business-info', data);
 
 /* ------------------------------ Misc --------------------------------- */
 
-export const isAdminReady = () => Boolean(firebaseEnabled);
+export const swapOrder = (collection, idA, orderA, idB, orderB) =>
+  post('/swap-order', { collection, idA, orderA, idB, orderB });
+
+/** Seed Firestore from the bundled data (server-side) if collections are empty. */
+export const seedDatabase = () => post('/seed');
