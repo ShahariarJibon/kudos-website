@@ -24,8 +24,17 @@ function MenuPage() {
       />
 
       {/* Category filter */}
-      <section className="sticky top-16 z-30 border-b border-maroon/10 bg-white/90 py-4 backdrop-blur-md sm:top-20">
-        <div className="container-kudos flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Menu categories" style={{ scrollbarWidth: 'none' }}>
+      <section className="sticky top-16 z-30 py-3 sm:top-[76px] sm:py-4">
+        <div
+          className="relative mx-auto flex max-w-7xl gap-1.5 overflow-x-auto rounded-2xl border border-white/70 bg-white/55 px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_12px_32px_-16px_rgba(127,32,32,0.28)] backdrop-blur-2xl backdrop-saturate-150"
+          role="tablist"
+          aria-label="Menu categories"
+          style={{ scrollbarWidth: 'none' }}
+        >
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/60 via-white/10 to-transparent opacity-70"
+          />
           {categories.map((c) => (
             <button
               key={c.id}
@@ -33,13 +42,24 @@ function MenuPage() {
               role="tab"
               aria-selected={active === c.id}
               onClick={() => setActive(c.id)}
-              className={`chip whitespace-nowrap border ${
-                active === c.id
-                  ? 'border-transparent bg-brand-gradient text-white shadow-glow'
-                  : 'border-maroon/15 bg-white text-maroon hover:border-orange/60 hover:bg-orange/5'
+              className={`relative shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-heading text-sm font-semibold transition-colors ${
+                active === c.id ? 'text-maroon' : 'text-neutral-600 hover:text-maroon'
               }`}
             >
-              {c.label}
+              {active === c.id && (
+                <motion.span
+                  layout={!reduce}
+                  layoutId={reduce ? undefined : 'menu-cat-pill'}
+                  transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  className="absolute inset-0 overflow-hidden rounded-full border border-white/70 bg-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_4px_14px_-2px_rgba(127,32,32,0.15)] backdrop-blur-xl backdrop-saturate-150"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/20 to-transparent"
+                  />
+                </motion.span>
+              )}
+              <span className="relative z-10">{c.label}</span>
             </button>
           ))}
         </div>
