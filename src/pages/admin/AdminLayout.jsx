@@ -96,10 +96,17 @@ export default function AdminLayout() {
       >
         <div className="flex h-16 items-center justify-between px-5">
           <Link to="/admin" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient font-heading text-sm font-extrabold text-white">
-              K
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 shadow-md ring-1 ring-black/10">
+              <img src="/images/logo.png" alt="KUDOS logo" className="h-full w-full object-contain" />
             </span>
-            <span className="font-heading text-lg font-extrabold tracking-wide">KUDOS Admin</span>
+            <span className="flex flex-col leading-tight">
+              <span className="font-heading text-lg font-extrabold italic tracking-wide text-white">
+                KUDOS <span className="bg-gradient-to-r from-orange to-redOrange bg-clip-text text-transparent">Admin</span>
+              </span>
+              <span className="font-heading text-[9px] font-bold uppercase tracking-[0.3em] text-white/60">
+                Management Panel
+              </span>
+            </span>
           </Link>
           <button
             type="button"
