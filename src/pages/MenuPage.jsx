@@ -26,7 +26,7 @@ function MenuPage() {
       {/* Category filter */}
       <section className="sticky top-16 z-30 py-3 sm:top-[76px] sm:py-4">
         <div
-          className="relative mx-auto flex max-w-7xl gap-1.5 overflow-x-auto rounded-2xl border border-white/70 bg-white/55 px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_12px_32px_-16px_rgba(127,32,32,0.28)] backdrop-blur-2xl backdrop-saturate-150"
+          className="relative mx-auto flex max-w-7xl gap-1.5 overflow-x-auto rounded-2xl border border-white/70 bg-[#F7F1DE]/60 px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_12px_32px_-16px_rgba(127,32,32,0.28)] backdrop-blur-2xl backdrop-saturate-150"
           role="tablist"
           aria-label="Menu categories"
           style={{ scrollbarWidth: 'none' }}
