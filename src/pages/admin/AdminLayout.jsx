@@ -11,6 +11,7 @@ const LINKS = [
   { to: '/admin/gallery', label: 'Gallery', icon: 'gallery' },
   { to: '/admin/testimonials', label: 'Testimonials', icon: 'testimonials' },
   { to: '/admin/business-info', label: 'Business Info', icon: 'business' },
+  { to: '/admin/settings', label: 'Settings', icon: 'settings' },
   { to: '/admin/orders', label: 'Orders', icon: 'orders', placeholder: true },
 ];
 
@@ -21,6 +22,7 @@ const icons = {
   gallery: <path d="M4 4h16v16H4zM4 15l4-4 3 3 4-5 5 6" />,
   testimonials: <path d="M12 3a5 5 0 0 1 5 5c0 2-1 3.5-2.5 4.5V15H9.5v-2.5C8 11.5 7 10 7 8a5 5 0 0 1 5-5zM9.5 17h5v2h-5zM9.5 20.5h5V22h-5z" />,
   business: <path d="M4 10h16v10H4zM8 10V6a4 4 0 0 1 8 0v4" />,
+  settings: <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2a2 2 0 1 1-4 0V21a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1h.2a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1z" />,
   orders: <path d="M6 3h12l1 5v13H5V8zM9 8V6a3 3 0 0 1 6 0v2" />,
 };
 

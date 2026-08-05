@@ -17,7 +17,7 @@ export function useNoIndex() {
 
 export default function LoginPage() {
   useNoIndex();
-  const { login, enabled } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,10 +25,6 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!enabled) {
-      toast.error('Admin is not configured. Set VITE_FIREBASE_* env vars and redeploy.');
-      return;
-    }
     if (!email.trim() || password.length < 6) {
       toast.error('Enter a valid email and password');
       return;
@@ -78,12 +74,11 @@ export default function LoginPage() {
             <button type="submit" disabled={busy} className={`${adminBtn} w-full`}>
               {busy ? 'Signing in…' : 'Sign In'}
             </button>
-            {!enabled && (
-              <p className="rounded-xl bg-redOrange/10 px-4 py-3 text-center text-xs leading-relaxed text-redOrange">
-                Firebase is not configured yet. Add the VITE_FIREBASE_* variables to enable the
-                admin panel.
-              </p>
-            )}
+            <p className="rounded-xl bg-orange/10 px-4 py-3 text-center text-xs leading-relaxed text-neutral-600">
+              Default sign-in: <span className="font-semibold text-maroon">admin@gmail.com</span> /{' '}
+              <span className="font-semibold text-maroon">admin123</span>. Change it anytime from{' '}
+              <span className="font-semibold text-maroon">Admin → Settings</span>.
+            </p>
           </form>
         </div>
       </div>

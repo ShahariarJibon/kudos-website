@@ -98,10 +98,11 @@ export default function DashboardPage() {
       <div className="mt-10 rounded-2xl bg-maroon p-6 text-white">
         <h2 className="font-heading text-lg font-bold">Staff access</h2>
         <p className="mt-2 text-sm leading-relaxed text-white/80">
-          Create staff accounts in the Firebase console (Authentication → Users → Add user). Share
-          the login URL <span className="font-semibold text-orange">https://yoursite.com/admin/login</span>{' '}
-          privately with your team — it is never linked on the public site and is excluded from
-          search indexing.
+          Sign in at <span className="font-semibold text-orange">/admin/login</span> with your admin
+          credentials (default <span className="font-semibold text-orange">admin@gmail.com</span> /{' '}
+          <span className="font-semibold text-orange">admin123</span>). Change them from{' '}
+          <span className="font-semibold text-orange">Settings</span>. The panel is never linked on
+          the public site and is excluded from search indexing.
         </p>
       </div>
     </div>
