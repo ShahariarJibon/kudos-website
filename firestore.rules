@@ -1,34 +1,31 @@
 rules_version = '2';
 
 // Public site (menu, gallery, testimonials, business info) is readable by everyone.
-// Writes are restricted to authenticated users (staff) — admin panel only.
-// Note: use your own ownership/role model to further restrict writes if needed
-// (e.g. compare a claims or a `users` collection role == 'owner').
+// Writes are open because the admin panel has its own built-in login
+// (default admin@gmail.com / admin123, changeable in Admin → Settings) —
+// there is no Firebase Auth user session. Tighten this by binding writes
+// to a secret document or Firebase Auth if you need stricter control later.
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isStaff() {
-      return request.auth != null;
-    }
-
     match /menuItems/{id} {
       allow read: if true;
-      allow write: if isStaff();
+      allow write: if true;
     }
     match /categories/{id} {
       allow read: if true;
-      allow write: if isStaff();
+      allow write: if true;
     }
     match /galleryImages/{id} {
       allow read: if true;
-      allow write: if isStaff();
+      allow write: if true;
     }
     match /testimonials/{id} {
       allow read: if true;
-      allow write: if isStaff();
+      allow write: if true;
     }
     match /businessInfo/{id} {
       allow read: if true;
-      allow write: if isStaff();
+      allow write: if true;
     }
     match /users/{userId} {
       allow read, write: if false;

@@ -58,8 +58,13 @@ export default function DashboardPage() {
         <div className="mt-8 rounded-2xl bg-redOrange/10 p-6 text-redOrange">
           <p className="font-heading font-bold">Firebase is not configured</p>
           <p className="mt-1 text-sm leading-relaxed">
-            Set the VITE_FIREBASE_* environment variables (see .env.example), enable Firestore,
-            Authentication (Email/Password) and Storage in the Firebase console, then redeploy.
+            To save edits to the live site: create a Firebase project
+            (console.firebase.google.com), add a web app, enable Firestore and
+            Storage, publish the rules in <span className="font-semibold">firestore.rules</span> and{' '}
+            <span className="font-semibold">storage.rules</span>, then set the six{' '}
+            <span className="font-semibold">VITE_FIREBASE_*</span> variables in Vercel → Settings →
+            Environment Variables and redeploy. Firebase Authentication is not needed — the panel
+            uses its own login.
           </p>
         </div>
       )}
