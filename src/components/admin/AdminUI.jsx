@@ -87,6 +87,28 @@ export function EmptyState({ message = 'Nothing here yet.', action }) {
   );
 }
 
+export function LoadError({ message, onRetry }) {
+  return (
+    <div className="mx-auto mt-8 max-w-2xl rounded-2xl bg-redOrange/10 p-6 text-redOrange">
+      <p className="font-heading text-base font-bold">Could not load data</p>
+      <p className="mt-1 break-words text-sm leading-relaxed">{message}</p>
+      <p className="mt-3 text-xs leading-relaxed text-redOrange/80">
+        Check that the six VITE_FIREBASE_* variables are set in Vercel and the project was
+        redeployed, Firestore is enabled, and the rules in firestore.rules are published.
+      </p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-4 inline-flex min-h-[40px] items-center justify-center rounded-full bg-redOrange px-5 py-2 font-heading text-xs font-bold uppercase tracking-wide text-white transition-all hover:brightness-110"
+        >
+          Retry
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function Modal({ open, onClose, title, children, wide = false }) {
   return (
     <AnimatePresence>

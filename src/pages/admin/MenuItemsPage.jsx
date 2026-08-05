@@ -5,6 +5,7 @@ import {
   ConfirmDialog,
   EmptyState,
   Field,
+  LoadError,
   Modal,
   Select,
   Spinner,
@@ -30,6 +31,7 @@ const EMPTY_FORM = { name: '', category: '', price: '', imageUrl: '', descriptio
 export default function MenuItemsPage() {
   const [items, setItems] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [loadError, setLoadError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -46,8 +48,14 @@ export default function MenuItemsPage() {
   };
 
   useEffect(() => {
-    load().catch((err) => toast.error(err.message));
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
   }, []);
+
+  const retry = () => {
+    setLoadError(null);
+    setItems(null);
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
+  };
 
   const visible = useMemo(() => {
     if (!items) return [];
@@ -154,7 +162,10 @@ export default function MenuItemsPage() {
     }
   };
 
-  if (!items) return <Spinner full label="Loading menu items…" />;
+  if (!items) {
+    if (loadError) return <LoadError message={loadError} onRetry={retry} />;
+    return <Spinner full label="Loading menu items…" />;
+  }
 
   return (
     <div className="mx-auto max-w-6xl">

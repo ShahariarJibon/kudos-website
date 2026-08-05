@@ -5,6 +5,7 @@ import {
   ConfirmDialog,
   EmptyState,
   Field,
+  LoadError,
   Modal,
   Spinner,
   TextInput,
@@ -15,6 +16,7 @@ import { addGalleryImage, deleteGalleryImage, fetchGallery, swapOrder, uploadIma
 
 export default function GalleryAdminPage() {
   const [images, setImages] = useState(null);
+  const [loadError, setLoadError] = useState(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [files, setFiles] = useState([]);
   const [caption, setCaption] = useState('');
@@ -27,8 +29,14 @@ export default function GalleryAdminPage() {
   };
 
   useEffect(() => {
-    load().catch((err) => toast.error(err.message));
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
   }, []);
+
+  const retry = () => {
+    setLoadError(null);
+    setImages(null);
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
+  };
 
   const sorted = useMemo(
     () => (images ? [...images].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : []),
@@ -85,7 +93,10 @@ export default function GalleryAdminPage() {
     }
   };
 
-  if (!images) return <Spinner full label="Loading gallery…" />;
+  if (!images) {
+    if (loadError) return <LoadError message={loadError} onRetry={retry} />;
+    return <Spinner full label="Loading gallery…" />;
+  }
 
   return (
     <div className="mx-auto max-w-6xl">

@@ -5,6 +5,7 @@ import {
   ConfirmDialog,
   EmptyState,
   Field,
+  LoadError,
   Modal,
   Spinner,
   TextArea,
@@ -58,6 +59,7 @@ const StarsReadonly = ({ value }) => (
 
 export default function TestimonialsAdminPage() {
   const [list, setList] = useState(null);
+  const [loadError, setLoadError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -71,8 +73,14 @@ export default function TestimonialsAdminPage() {
   };
 
   useEffect(() => {
-    load().catch((err) => toast.error(err.message));
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
   }, []);
+
+  const retry = () => {
+    setLoadError(null);
+    setList(null);
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
+  };
 
   const openAdd = () => {
     setEditing(null);
@@ -142,7 +150,10 @@ export default function TestimonialsAdminPage() {
     }
   };
 
-  if (!list) return <Spinner full label="Loading testimonials…" />;
+  if (!list) {
+    if (loadError) return <LoadError message={loadError} onRetry={retry} />;
+    return <Spinner full label="Loading testimonials…" />;
+  }
 
   return (
     <div className="mx-auto max-w-4xl">

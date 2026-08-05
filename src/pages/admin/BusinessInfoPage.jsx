@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { AdminPageHeader, Field, Spinner, TextInput, adminBtn } from '../../components/admin/AdminUI';
+import { AdminPageHeader, Field, LoadError, Spinner, TextInput, adminBtn } from '../../components/admin/AdminUI';
 import { fetchBusinessInfo, saveBusinessInfo } from '../../services/adminService';
 
 const defaultHours = () => [
@@ -10,6 +10,7 @@ const defaultHours = () => [
 
 export default function BusinessInfoPage() {
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     hours: defaultHours(),
@@ -20,7 +21,7 @@ export default function BusinessInfoPage() {
     outletAddress: '',
   });
 
-  useEffect(() => {
+  const load = () =>
     fetchBusinessInfo()
       .then((data) => {
         setForm({
@@ -32,9 +33,18 @@ export default function BusinessInfoPage() {
           outletAddress: data.outletAddress || '',
         });
       })
-      .catch((err) => toast.error(err.message))
+      .catch((err) => setLoadError(err?.message || 'Something went wrong'))
       .finally(() => setLoading(false));
+
+  useEffect(() => {
+    load();
   }, []);
+
+  const retry = () => {
+    setLoadError(null);
+    setLoading(true);
+    load();
+  };
 
   const setHour = (i, key, value) => {
     const hours = [...form.hours];
@@ -58,6 +68,7 @@ export default function BusinessInfoPage() {
   };
 
   if (loading) return <Spinner full label="Loading business info…" />;
+  if (loadError) return <LoadError message={loadError} onRetry={retry} />;
 
   return (
     <div className="mx-auto max-w-3xl">

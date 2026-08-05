@@ -5,6 +5,7 @@ import {
   ConfirmDialog,
   EmptyState,
   Field,
+  LoadError,
   Modal,
   Spinner,
   TextInput,
@@ -23,6 +24,7 @@ import {
 export default function CategoriesPage() {
   const [categories, setCategories] = useState(null);
   const [items, setItems] = useState([]);
+  const [loadError, setLoadError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [name, setName] = useState('');
@@ -37,8 +39,14 @@ export default function CategoriesPage() {
   };
 
   useEffect(() => {
-    load().catch((err) => toast.error(err.message));
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
   }, []);
+
+  const retry = () => {
+    setLoadError(null);
+    setCategories(null);
+    load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
+  };
 
   const sorted = useMemo(
     () => (categories ? [...categories].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : []),
@@ -112,7 +120,10 @@ export default function CategoriesPage() {
     }
   };
 
-  if (!categories) return <Spinner full label="Loading categories…" />;
+  if (!categories) {
+    if (loadError) return <LoadError message={loadError} onRetry={retry} />;
+    return <Spinner full label="Loading categories…" />;
+  }
 
   return (
     <div className="mx-auto max-w-3xl">
