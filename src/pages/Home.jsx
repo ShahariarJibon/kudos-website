@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { ALL_ITEMS } from '../data/menu';
 import { SITE, STATS } from '../data/site';
+import { useBusinessInfo, useMenuData } from '../services/publicData';
 import MenuCard from '../components/MenuCard';
 import AutoCarousel from '../components/AutoCarousel';
 import Reveal from '../components/ui/Reveal';
@@ -9,8 +9,8 @@ import SectionTitle from '../components/ui/SectionTitle';
 import CountUp from '../components/ui/CountUp';
 import LazyImage from '../components/ui/LazyImage';
 
-// Curated set for the hero marquee (keeps image payload light)
-const SIGNATURE_ITEMS = [
+// Curated names for the hero marquee (falls back gracefully if an item is missing)
+const SIGNATURE_NAMES = [
   '90s Classic Chicken Burger',
   'Naga Wings (6 pcs)',
   'Chicken Cheese Burger',
@@ -23,7 +23,7 @@ const SIGNATURE_ITEMS = [
   'Chicken Sub-Sandwich',
   'Crunchy Wrap',
   'Handcrafted Fries',
-].map((name) => ALL_ITEMS.find((i) => i.name === name));
+];
 
 const containerVariants = {
   hidden: {},
@@ -146,6 +146,10 @@ function Hero() {
 }
 
 function Home() {
+  const { items } = useMenuData();
+  const info = useBusinessInfo();
+  const signatureItems = SIGNATURE_NAMES.map((name) => items.find((i) => i.name === name)).filter(Boolean);
+
   return (
     <>
       <Hero />
@@ -157,13 +161,15 @@ function Home() {
             Fresh from the live kitchen
           </p>
         </div>
-        <AutoCarousel ariaLabel="Auto-scrolling food showcase">
-          {SIGNATURE_ITEMS.map((item) => (
-            <div key={item.name} className="w-56 shrink-0 sm:w-64">
-              <MenuCard item={item} />
-            </div>
-          ))}
-        </AutoCarousel>
+        {signatureItems.length > 0 && (
+          <AutoCarousel ariaLabel="Auto-scrolling food showcase">
+            {signatureItems.map((item) => (
+              <div key={item.name} className="w-56 shrink-0 sm:w-64">
+                <MenuCard item={item} />
+              </div>
+            ))}
+          </AutoCarousel>
+        )}
       </section>
 
       {/* Menu preview */}
@@ -175,7 +181,7 @@ function Home() {
             subtitle="From flame-grilled burgers to smoky rice meals and ice-cold freezes — a taste of what keeps Dhaka coming back."
           />
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {ALL_ITEMS.slice(0, 8).map((item, i) => (
+            {items.slice(0, 8).map((item, i) => (
               <Reveal key={item.name} delay={(i % 4) * 0.08}>
                 <MenuCard item={item} showCategory />
               </Reveal>
@@ -206,7 +212,7 @@ function Home() {
                     Opening Time
                   </h3>
                   <ul className="mt-4 space-y-3">
-                    {SITE.hours.map((h) => (
+                    {info.hours.map((h) => (
                       <li key={h.days} className="flex items-center justify-between gap-4 rounded-xl bg-neutral-50 px-4 py-3">
                         <span className="font-medium text-neutral-700">{h.days}</span>
                         <span className="font-heading font-bold text-maroon">
@@ -225,18 +231,18 @@ function Home() {
                   </h3>
                   <ul className="mt-4 space-y-3">
                     <li>
-                      <a href={SITE.phoneHref} className="flex min-h-[48px] items-center gap-3 rounded-xl bg-neutral-50 px-4 py-3 font-medium text-neutral-700 transition-all hover:bg-brand-gradient hover:text-white">
-                        {SITE.phone}
+                      <a href={info.phoneHref} className="flex min-h-[48px] items-center gap-3 rounded-xl bg-neutral-50 px-4 py-3 font-medium text-neutral-700 transition-all hover:bg-brand-gradient hover:text-white">
+                        {info.phone}
                       </a>
                     </li>
                     <li>
-                      <a href={`mailto:${SITE.email}`} className="flex min-h-[48px] items-center gap-3 rounded-xl bg-neutral-50 px-4 py-3 font-medium text-neutral-700 transition-all hover:bg-brand-gradient hover:text-white">
-                        {SITE.email}
+                      <a href={`mailto:${info.email}`} className="flex min-h-[48px] items-center gap-3 rounded-xl bg-neutral-50 px-4 py-3 font-medium text-neutral-700 transition-all hover:bg-brand-gradient hover:text-white">
+                        {info.email}
                       </a>
                     </li>
                   </ul>
                   <div className="mt-4 flex items-center gap-3">
-                    {Object.entries(SITE.socials).map(([key, social]) => (
+                    {Object.entries(info.socials).map(([key, social]) => (
                       <a
                         key={key}
                         href={social.url}

@@ -2,9 +2,12 @@ import PageHeader from '../components/ui/PageHeader';
 import SectionTitle from '../components/ui/SectionTitle';
 import Reveal from '../components/ui/Reveal';
 import TestimonialSlider from '../components/TestimonialSlider';
-import { TESTIMONIALS, VIDEO_IDS } from '../data/testimonials';
+import { VIDEO_IDS } from '../data/testimonials';
+import { useTestimonials } from '../services/publicData';
 
 function TestimonialsPage() {
+  const testimonials = useTestimonials();
+
   return (
     <>
       <PageHeader
@@ -16,7 +19,7 @@ function TestimonialsPage() {
       <section className="section-pad bg-hero-gradient">
         <div className="container-kudos">
           <Reveal>
-            <TestimonialSlider items={TESTIMONIALS} />
+            <TestimonialSlider items={testimonials} />
           </Reveal>
         </div>
       </section>

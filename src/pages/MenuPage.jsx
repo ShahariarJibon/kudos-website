@@ -5,15 +5,20 @@ import SectionTitle from '../components/ui/SectionTitle';
 import Reveal from '../components/ui/Reveal';
 import MenuCard from '../components/MenuCard';
 import LazyImage from '../components/ui/LazyImage';
-import { MENU_CATEGORIES, MENU_POSTERS } from '../data/menu';
+import { MENU_POSTERS } from '../data/menu';
+import { useMenuData } from '../services/publicData';
 import { SITE } from '../data/site';
 
 function MenuPage() {
   const [active, setActive] = useState('all');
   const reduce = useReducedMotion();
+  const { categories } = useMenuData();
 
-  const categories = [{ id: 'all', label: 'All Items', blurb: 'Everything on the KUDOS menu.', items: MENU_CATEGORIES.flatMap((c) => c.items.map((i) => ({ ...i, category: c.label }))) }, ...MENU_CATEGORIES];
-  const current = categories.find((c) => c.id === active);
+  const menuCategories = [
+    { id: 'all', label: 'All Items', blurb: 'Everything on the KUDOS menu.', items: categories.flatMap((c) => c.items) },
+    ...categories,
+  ];
+  const current = menuCategories.find((c) => c.id === active);
 
   return (
     <>

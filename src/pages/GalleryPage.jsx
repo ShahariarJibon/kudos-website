@@ -4,25 +4,18 @@ import PageHeader from '../components/ui/PageHeader';
 import SectionTitle from '../components/ui/SectionTitle';
 import Reveal from '../components/ui/Reveal';
 import LazyImage from '../components/ui/LazyImage';
-import { ALL_ITEMS } from '../data/menu';
 import { VIDEO_IDS } from '../data/testimonials';
-
-// Build gallery from menu imagery + hero + flagship shots
-const GALLERY_IMAGES = [
-  { src: '/images/hero-burger.png', alt: 'KUDOS signature burger', category: 'Food' },
-  ...ALL_ITEMS.map((it) => ({ src: it.image, alt: it.name, category: it.category })),
-  { src: '/images/about-flagship.jpg', alt: 'KUDOS flagship branch', category: 'Outlet' },
-  { src: '/images/kudocafe-menu.jpg', alt: 'KudoCafe menu', category: 'Cafe' },
-];
+import { useGalleryImages } from '../services/publicData';
 
 function GalleryPage() {
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const images = useGalleryImages();
 
   const close = useCallback(() => setLightboxIndex(null), []);
   const step = useCallback(
     (dir) =>
-      setLightboxIndex((i) => (i === null ? i : (i + dir + GALLERY_IMAGES.length) % GALLERY_IMAGES.length)),
-    []
+      setLightboxIndex((i) => (i === null ? i : (i + dir + images.length) % images.length)),
+    [images.length]
   );
 
   useEffect(() => {
@@ -82,7 +75,7 @@ function GalleryPage() {
             subtitle="Tap any photo to view it full size."
           />
           <div className="mt-12 columns-2 gap-4 sm:columns-3 lg:columns-4 [column-fill:_balance]">
-            {GALLERY_IMAGES.map((g, i) => (
+            {images.map((g, i) => (
               <Reveal key={g.src + i} delay={(i % 4) * 0.05} className="mb-4 break-inside-avoid">
                 <button
                   type="button"
@@ -140,14 +133,14 @@ function GalleryPage() {
             </button>
             <figure className="max-h-[85vh] max-w-4xl" onClick={(e) => e.stopPropagation()}>
               <LazyImage
-                src={GALLERY_IMAGES[lightboxIndex].src}
-                alt={GALLERY_IMAGES[lightboxIndex].alt}
+                src={images[lightboxIndex].src}
+                alt={images[lightboxIndex].alt}
                 className="max-h-[78vh] w-auto"
                 imgClassName="h-full w-full max-h-[78vh] object-contain rounded-lg"
                 eager
               />
               <figcaption className="mt-3 text-center text-white/90">
-                {GALLERY_IMAGES[lightboxIndex].alt} · {lightboxIndex + 1}/{GALLERY_IMAGES.length}
+                {images[lightboxIndex].alt} · {lightboxIndex + 1}/{images.length}
               </figcaption>
             </figure>
             <button

@@ -2,7 +2,7 @@ import PageHeader from '../components/ui/PageHeader';
 import SectionTitle from '../components/ui/SectionTitle';
 import Reveal from '../components/ui/Reveal';
 import { OUTLETS } from '../data/outlets';
-import { SITE } from '../data/site';
+import { useBusinessInfo } from '../services/publicData';
 import { useState } from 'react';
 
 // Centered on Dhaka — all outlets are within Bangladesh.
@@ -46,6 +46,7 @@ function OutletCard({ outlet, i }) {
 }
 
 function OutletLocation() {
+  const info = useBusinessInfo();
   const inside = OUTLETS.filter((o) => o.region === 'Inside Dhaka');
   const outside = OUTLETS.filter((o) => o.region === 'Outside Dhaka');
   const [sent, setSent] = useState(false);
@@ -131,7 +132,7 @@ function OutletLocation() {
                     <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
                   </svg>
                 </span>
-                <a href={SITE.phoneHref} className="transition-colors hover:text-orange">{SITE.phone}</a>
+                <a href={info.phoneHref} className="transition-colors hover:text-orange">{info.phone}</a>
               </p>
               <p className="flex items-center gap-3 font-heading font-semibold text-maroon">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-orange/10 text-orange">
@@ -140,12 +141,15 @@ function OutletLocation() {
                     <path d="m3 7 9 6 9-6" />
                   </svg>
                 </span>
-                <a href={`mailto:${SITE.email}`} className="break-all transition-colors hover:text-orange">{SITE.email}</a>
+                <a href={`mailto:${info.email}`} className="break-all transition-colors hover:text-orange">{info.email}</a>
               </p>
               <div className="rounded-2xl bg-neutral-50 p-5 text-sm text-neutral-600">
                 <p className="font-heading font-semibold text-maroon">Opening Hours</p>
-                <p className="mt-2">Sat – Thu: 12:00 PM – 10:30 PM</p>
-                <p>Friday: 3:00 PM – 11:00 PM</p>
+                {info.hours.map((h) => (
+                  <p key={h.days} className="mt-2">
+                    {h.days}: {h.open} – {h.close}
+                  </p>
+                ))}
               </div>
             </div>
           </div>

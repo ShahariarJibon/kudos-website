@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -9,6 +9,7 @@ import ItemModal from './components/ItemModal';
 import CartDrawer from './components/CartDrawer';
 import CartFlyover from './components/CartFlyover';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 
 // Code-split pages — only load what's needed.
 const Home = lazy(() => import('./pages/Home'));
@@ -21,6 +22,17 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const BoardPage = lazy(() => import('./pages/BoardPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 
+// /admin is a separate, protected section — never rendered inside public chrome.
+const AdminLogin = lazy(() => import('./pages/admin/LoginPage'));
+const RequireAuth = lazy(() => import('./components/admin/RequireAuth'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const DashboardPage = lazy(() => import('./pages/admin/DashboardPage'));
+const AdminMenuItems = lazy(() => import('./pages/admin/MenuItemsPage'));
+const AdminCategories = lazy(() => import('./pages/admin/CategoriesPage'));
+const AdminGallery = lazy(() => import('./pages/admin/GalleryPage'));
+const AdminTestimonials = lazy(() => import('./pages/admin/TestimonialsPage'));
+const AdminBusinessInfo = lazy(() => import('./pages/admin/BusinessInfoPage'));
+
 function PageLoader() {
   return (
     <div className="flex min-h-[60vh] items-center justify-center" role="status" aria-label="Loading page">
@@ -29,6 +41,33 @@ function PageLoader() {
         <span className="font-heading text-sm font-medium text-neutral-500">Loading…</span>
       </div>
     </div>
+  );
+}
+
+function AdminRoutes() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth>
+              <AdminLayout />
+            </RequireAuth>
+          }
+        >
+          <Route index element={<DashboardPage />} />
+          <Route path="menu-items" element={<AdminMenuItems />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="gallery" element={<AdminGallery />} />
+          <Route path="testimonials" element={<AdminTestimonials />} />
+          <Route path="business-info" element={<AdminBusinessInfo />} />
+          <Route path="orders" element={<DashboardPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 
@@ -64,9 +103,15 @@ function AnimatedRoutes() {
   );
 }
 
-export default function App() {
+function Shell() {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
+
+  // Admin panel: standalone layout, no public nav/footer/cart chrome.
+  if (isAdmin) return <AdminRoutes />;
+
   return (
-    <CartProvider>
+    <>
       <ScrollToTop />
       <Navbar />
       <main>
@@ -77,6 +122,16 @@ export default function App() {
       <ItemModal />
       <CartDrawer />
       <CartFlyover />
-    </CartProvider>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Shell />
+      </CartProvider>
+    </AuthProvider>
   );
 }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { NAV_LINKS, SITE } from '../data/site';
+import { useBusinessInfo } from '../services/publicData';
 import Logo from './Logo';
 
 const socialIcon = {
@@ -26,6 +27,8 @@ const socialIcon = {
  * Footer — maroon dark band with brand info, links, hours and contact.
  */
 export default function Footer() {
+  const info = useBusinessInfo();
+
   return (
     <footer className="bg-maroon text-white">
       <div className="container-kudos grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
@@ -38,7 +41,7 @@ export default function Footer() {
             quality meals at affordable deals. {SITE.tagline}.
           </p>
           <div className="mt-5 flex items-center gap-3">
-            {Object.entries(SITE.socials).map(([key, social]) => (
+            {Object.entries(info.socials).map(([key, social]) => (
               <a
                 key={key}
                 href={social.url}
@@ -76,7 +79,7 @@ export default function Footer() {
             Opening Hours
           </h3>
           <ul className="mt-4 space-y-3 text-sm">
-            {SITE.hours.map((h) => (
+            {info.hours.map((h) => (
               <li key={h.days} className="text-white/80">
                 <p className="font-semibold text-white">{h.days}</p>
                 <p>
@@ -102,26 +105,29 @@ export default function Footer() {
           </h3>
           <ul className="mt-4 space-y-3 text-sm text-white/80">
             <li>
-              <a href={SITE.phoneHref} className="inline-flex min-h-[44px] items-center gap-2 transition-colors hover:text-orange">
+              <a href={info.phoneHref} className="inline-flex min-h-[44px] items-center gap-2 transition-colors hover:text-orange">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                   <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
                 </svg>
-                {SITE.phone}
+                {info.phone}
               </a>
             </li>
             <li>
-              <a href={`mailto:${SITE.email}`} className="inline-flex min-h-[44px] items-center gap-2 transition-colors hover:text-orange">
+              <a href={`mailto:${info.email}`} className="inline-flex min-h-[44px] items-center gap-2 transition-colors hover:text-orange">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                   <rect x="3" y="5" width="18" height="14" rx="2" />
                   <path d="m3 7 9 6 9-6" />
                 </svg>
-                {SITE.email}
+                {info.email}
               </a>
             </li>
           </ul>
           <div className="mt-4 space-y-1.5 text-sm text-white/60">
-            <p>Sat – Thu: 12:00 PM – 10:30 PM</p>
-            <p>Friday: 3:00 PM – 11:00 PM</p>
+            {info.hours.map((h) => (
+              <p key={h.days}>
+                {h.days}: {h.open} – {h.close}
+              </p>
+            ))}
           </div>
         </div>
       </div>
