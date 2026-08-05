@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-paper text-ink font-body antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+  }
+
+  ::selection {
+    background-color: #fb6c00;
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .container-kudos {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-brand {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand-gradient px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-glow transition-all duration-300 ease-out;
+  }
+
+  .btn-brand:hover {
+    @apply bg-brand-gradient-dark -translate-y-0.5;
+  }
+
+  .btn-brand:active {
+    @apply scale-95;
+  }
+
+  .btn-outline {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border-2 border-maroon px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-maroon transition-all duration-300 ease-out;
+  }
+
+  .btn-outline:hover {
+    @apply border-orange bg-orange text-white;
+  }
+
+  .btn-outline:active {
+    @apply scale-95;
+  }
+
+  .chip {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 py-2.5 font-heading text-sm font-semibold uppercase tracking-wide transition-all duration-300;
+  }
+
+  .section-pad {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .nav-link-underline {
+    position: relative;
+  }
+
+  .nav-link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    background: linear-gradient(90deg, #fb6c00, #e73f1e);
+    border-radius: 999px;
+  }
+
+  .nav-link-underline:hover::after,
+  .nav-link-underline:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Focus visibility for keyboard users */
+:focus-visible {
+  outline: 2px solid #fb6c00;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect users who prefer reduced motion — kill CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
