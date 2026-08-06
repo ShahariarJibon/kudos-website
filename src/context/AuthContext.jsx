@@ -18,7 +18,14 @@ export function AuthProvider({ children }) {
       throw err;
     }
     if (!res.ok) {
-      throw new Error('Admin API is unavailable — check the server configuration');
+      let message = 'Admin API is unavailable — check the server configuration';
+      try {
+        const body = await res.json();
+        if (body?.error) message = body.error;
+      } catch {
+        /* keep default */
+      }
+      throw new Error(message);
     }
     saveAdminPassword(password);
     setUser({ email: 'admin' });
