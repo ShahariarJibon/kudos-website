@@ -5,9 +5,9 @@ const MAX_BYTES = 3 * 1024 * 1024; // keeps base64 payloads under Vercel's body 
 
 export default async function handler(req, res) {
   if (!checkAdminPassword(req, res)) return;
-  const { bucket } = adminServices();
 
   try {
+    const { bucket } = adminServices();
     if (req.method !== 'POST') return methodNotAllowed(res);
     const body = await readBody(req);
     const folder = body.folder;

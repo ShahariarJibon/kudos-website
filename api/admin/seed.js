@@ -14,9 +14,9 @@ const GALLERY_SEED = [
 
 export default async function handler(req, res) {
   if (!checkAdminPassword(req, res)) return;
-  const { db } = adminServices();
 
   try {
+    const { db } = adminServices();
     if (req.method !== 'POST') return methodNotAllowed(res);
 
     const categoriesSnap = await db.collection('categories').orderBy('order').get();

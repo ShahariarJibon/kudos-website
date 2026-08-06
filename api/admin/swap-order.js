@@ -4,9 +4,9 @@ const COLLECTIONS = ['menuItems', 'categories', 'galleryImages', 'testimonials']
 
 export default async function handler(req, res) {
   if (!checkAdminPassword(req, res)) return;
-  const { db } = adminServices();
 
   try {
+    const { db } = adminServices();
     if (req.method !== 'POST') return methodNotAllowed(res);
     const body = await readBody(req);
     const { collection, idA, orderA, idB, orderB } = body;
