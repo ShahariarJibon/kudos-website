@@ -9,7 +9,7 @@ function BoardPage() {
       <PageHeader
         kicker="Board of Directors"
         title="Board of Directors"
-        subtitle="The team behind the KUDOS brand — four co-founders, one shared mission."
+        subtitle="The team behind the KUDOS brand  -  four co-founders, one shared mission."
       />
 
       <section className="section-pad bg-hero-gradient">

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 /**
- * AutoCarousel — GPU-friendly infinite marquee.
+ * AutoCarousel  -  GPU-friendly infinite marquee.
  * - Pauses on hover / focus / touch (interaction).
  * - Reduced motion: renders static scrollable row (no animation).
  */

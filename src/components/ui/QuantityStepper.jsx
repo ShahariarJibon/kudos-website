@@ -1,5 +1,5 @@
 /**
- * QuantityStepper — − / qty / + with 44px+ touch targets.
+ * QuantityStepper  -  − / qty / + with 44px+ touch targets.
  */
 export default function QuantityStepper({ qty, onChange, min = 1, compact = false }) {
   const size = compact ? 'h-9 w-9' : 'h-11 w-11';

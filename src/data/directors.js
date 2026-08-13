@@ -1,4 +1,4 @@
-// KUDOS Board of Directors — real members from kudos.com.bd/board-of-directors.
+// KUDOS Board of Directors  -  real members from kudos.com.bd/board-of-directors.
 export const DIRECTORS = [
   {
     name: 'Syed Azizur Rahman Quadri',

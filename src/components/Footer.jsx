@@ -24,7 +24,7 @@ const socialIcon = {
 };
 
 /**
- * Footer — maroon dark band with brand info, links, hours and contact.
+ * Footer  -  maroon dark band with brand info, links, hours and contact.
  */
 export default function Footer() {
   const info = useBusinessInfo();
@@ -33,7 +33,7 @@ export default function Footer() {
     <footer className="bg-maroon text-white">
       <div className="container-kudos grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Link to="/" aria-label="KUDOS — go to homepage">
+          <Link to="/" aria-label="KUDOS  -  go to homepage">
             <Logo />
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-white/70">
@@ -83,7 +83,7 @@ export default function Footer() {
               <li key={h.days} className="text-white/80">
                 <p className="font-semibold text-white">{h.days}</p>
                 <p>
-                  {h.open} – {h.close}
+                  {h.open}  -  {h.close}
                 </p>
               </li>
             ))}
@@ -125,7 +125,7 @@ export default function Footer() {
           <div className="mt-4 space-y-1.5 text-sm text-white/60">
             {info.hours.map((h) => (
               <p key={h.days}>
-                {h.days}: {h.open} – {h.close}
+                {h.days}: {h.open}  -  {h.close}
               </p>
             ))}
           </div>

@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { SITE } from '../data/site';
 
 /**
- * FloatingOrder — sticky bottom "Order Now" bar for mobile,
+ * FloatingOrder  -  sticky bottom "Order Now" bar for mobile,
  * appears after scrolling past the hero. Desktop uses the nav CTA instead.
  */
 export default function FloatingOrder() {

@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand palette — KUDOS (only these + white/black/neutral grays)
+        // Brand palette  -  KUDOS (only these + white/black/neutral grays)
         orange: '#FB6C00',
         redOrange: '#E73F1E',
         maroon: '#7F2020',

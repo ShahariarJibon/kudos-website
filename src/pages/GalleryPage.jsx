@@ -38,7 +38,7 @@ function GalleryPage() {
       <PageHeader
         kicker="Gallery"
         title="Gallery"
-        subtitle="A glimpse inside KUDOS — sizzling dishes from the live kitchen and the vibe of our outlets across Bangladesh."
+        subtitle="A glimpse inside KUDOS  -  sizzling dishes from the live kitchen and the vibe of our outlets across Bangladesh."
       />
 
       {/* Video showcase */}

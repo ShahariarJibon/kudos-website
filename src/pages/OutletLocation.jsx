@@ -5,7 +5,7 @@ import { OUTLETS } from '../data/outlets';
 import { useBusinessInfo } from '../services/publicData';
 import { useState } from 'react';
 
-// Centered on Dhaka — all outlets are within Bangladesh.
+// Centered on Dhaka  -  all outlets are within Bangladesh.
 const MAP_EMBED_SRC =
   'https://www.google.com/maps?q=KUDOS+Bangladesh&hl=en&z=11&output=embed';
 
@@ -82,7 +82,7 @@ function OutletLocation() {
             align="left"
             kicker="Inside Dhaka"
             title="Dhaka outlets"
-            subtitle="Thirteen locations across the capital — including our landmark Uttara and Bashundhara flagship branches."
+            subtitle="Thirteen locations across the capital  -  including our landmark Uttara and Bashundhara flagship branches."
           />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {inside.map((o, i) => (
@@ -99,7 +99,7 @@ function OutletLocation() {
             align="left"
             kicker="Outside Dhaka"
             title="Across Bangladesh"
-            subtitle="Expanding beyond the capital — now serving five districts nationwide."
+            subtitle="Expanding beyond the capital  -  now serving five districts nationwide."
           />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {outside.map((o, i) => (
@@ -108,7 +108,7 @@ function OutletLocation() {
           </div>
           <Reveal className="mt-12">
             <div className="rounded-3xl bg-white p-6 text-sm text-neutral-600 shadow-card">
-              Khilgaon, Wari, South Banasree and Shonir Akhra branches are permanently closed — please
+              Khilgaon, Wari, South Banasree and Shonir Akhra branches are permanently closed  -  please
               visit our other locations or use the ordering platform.
             </div>
           </Reveal>
@@ -147,7 +147,7 @@ function OutletLocation() {
                 <p className="font-heading font-semibold text-maroon">Opening Hours</p>
                 {info.hours.map((h) => (
                   <p key={h.days} className="mt-2">
-                    {h.days}: {h.open} – {h.close}
+                    {h.days}: {h.open}  -  {h.close}
                   </p>
                 ))}
               </div>

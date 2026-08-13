@@ -7,29 +7,6 @@ import { useCart } from '../context/CartContext';
 import { ACTIVE_OUTLETS } from '../data/outlets';
 import { SITE } from '../data/site';
 
-const AREAS = [
-  'Bashundhara R/A',
-  'Dhanmondi',
-  'Uttara',
-  'Mirpur',
-  'Mohammadpur',
-  'Banasree',
-  'Panthapath',
-  'Lalbagh',
-  'Badda',
-  'Tejgaon',
-  'Khilgaon',
-  'Motijheel',
-  'Gulshan',
-  'Banani',
-  'Khulna City',
-  'Chattogram City',
-  'Cumilla City',
-  'Rajshahi City',
-  'Tangail Sadar',
-  'Other',
-];
-
 const PAYMENTS = [
   { id: 'cod', label: 'Cash on Delivery', desc: 'Pay when you receive your order' },
   { id: 'bkash', label: 'bKash', desc: `Send Money to ${SITE.phone}` },
@@ -40,28 +17,17 @@ const PAYMENTS = [
 const PICKUP_SLOTS = ['ASAP', 'In 30 minutes', 'In 1 hour', 'In 2 hours'];
 
 /**
- * CheckoutPage — fully in-app checkout (/checkout).
- * Order summary (editable qty), Delivery/Pickup recap, contact + method
- * details, payment method, price breakdown and Place Order.
- * Submitting shows an in-app animated confirmation — NO external redirect.
+ * CheckoutPage  -  fully in-app checkout (/checkout).
+ * Order summary (editable qty), pickup recap (Order for Prepare), contact +
+ * method details, payment method, price breakdown and Place Order.
+ * Submitting shows an in-app animated confirmation  -  NO external redirect.
  */
 export default function CheckoutPage() {
-  const {
-    cart,
-    subtotal,
-    updateQty,
-    removeItem,
-    setOrderMethod,
-    setAddress,
-    setOutlet,
-    clearCart,
-  } = useCart();
+  const { cart, subtotal, updateQty, removeItem, setOutlet, clearCart } = useCart();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [address, setAddressInput] = useState(cart.address || '');
-  const [area, setArea] = useState('');
   const [notes, setNotes] = useState('');
   const [outlet, setOutletInput] = useState(
     cart.outlet || ACTIVE_OUTLETS.find((o) => o.flagship)?.name || ACTIVE_OUTLETS[0]?.name || ''
@@ -71,14 +37,12 @@ export default function CheckoutPage() {
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState(null); // { orderId, eta }
 
-  const deliveryFee = cart.orderMethod === 'delivery' ? SITE.deliveryFee : 0;
-  const total = subtotal + deliveryFee;
+  const total = subtotal;
 
   const canPlace = useMemo(() => {
     if (!name.trim() || phone.trim().length < 10) return false;
-    if (cart.orderMethod === 'delivery' && (!address.trim() || !area)) return false;
     return true;
-  }, [name, phone, address, area, cart.orderMethod]);
+  }, [name, phone]);
 
   const handlePlaceOrder = () => {
     if (!canPlace || placing) return;
@@ -91,7 +55,7 @@ export default function CheckoutPage() {
      *     headers: { 'Content-Type': 'application/json' },
      *     body: JSON.stringify({
      *       items: cart.items, method: cart.orderMethod, contact: { name, phone },
-     *       address, area, notes, outlet, slot, payment,
+     *       notes, outlet, slot, payment,
      *     }),
      *   });
      */
@@ -99,8 +63,8 @@ export default function CheckoutPage() {
     setTimeout(() => {
       setPlaced({
         orderId,
-        eta: cart.orderMethod === 'delivery' ? SITE.deliveryEta : SITE.pickupEta,
-        method: cart.orderMethod,
+        eta: SITE.pickupEta,
+        method: 'pickup',
       });
       setPlacing(false);
     }, 900);
@@ -171,8 +135,7 @@ export default function CheckoutPage() {
                 Order Placed!
               </h1>
               <p className="mt-2 text-white/90">
-                Order <span className="font-bold">{placed.orderId}</span> —{' '}
-                {placed.method === 'delivery' ? 'delivery' : 'pickup'} in approximately {placed.eta}.
+                Order <span className="font-bold">{placed.orderId}</span>  -  pickup in approximately {placed.eta}.
               </p>
             </div>
 
@@ -201,9 +164,7 @@ export default function CheckoutPage() {
               </div>
               <p className="mt-2 text-sm text-neutral-500">
                 Paid via <span className="font-semibold text-neutral-700">{PAYMENTS.find((p) => p.id === payment)?.label}</span> ·{' '}
-                {placed.method === 'delivery'
-                  ? `Delivering to ${area ? `${area}, ` : ''}${address}`
-                  : `Pickup at ${outlet}`}
+                Pickup at {outlet}
               </p>
 
               <button type="button" onClick={handleBackToMenu} className="btn-brand mt-8 w-full !min-h-[52px]">
@@ -221,7 +182,7 @@ export default function CheckoutPage() {
       <PageHeader
         kicker="Checkout"
         title="Complete your order"
-        subtitle="Review your items, add contact details and choose how you want to pay. All handled right here — no redirects."
+        subtitle="Review your items, add contact details and choose how you want to pay. All handled right here  -  no redirects."
       />
 
       <section className="section-pad bg-hero-gradient">
@@ -267,121 +228,51 @@ export default function CheckoutPage() {
               </ul>
             </div>
 
-            {/* Order method recap */}
+            {/* Order method recap (pickup only) */}
             <div className="rounded-3xl bg-white p-6 shadow-card ring-1 ring-maroon/5 sm:p-8">
-              <h2 className="font-heading text-lg font-bold text-maroon">Order Method</h2>
-              <div className="mt-4 grid grid-cols-2 gap-1 rounded-full bg-neutral-100 p-1" role="radiogroup" aria-label="Order method">
-                {['delivery', 'pickup'].map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    role="radio"
-                    aria-checked={cart.orderMethod === m}
-                    onClick={() => setOrderMethod(m)}
-                    className={`min-h-[44px] rounded-full font-heading text-sm font-bold uppercase tracking-wide transition-all duration-300 ${
-                      cart.orderMethod === m
-                        ? 'bg-brand-gradient text-white shadow-glow'
-                        : 'text-neutral-600 hover:text-maroon'
-                    }`}
+              <h2 className="font-heading text-lg font-bold text-maroon">Order for Prepare</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="co-outlet" className="mb-1.5 block font-heading text-sm font-semibold text-neutral-700">
+                    Pickup Outlet
+                  </label>
+                  <select
+                    id="co-outlet"
+                    value={outlet}
+                    onChange={(e) => {
+                      setOutletInput(e.target.value);
+                      setOutlet(e.target.value);
+                    }}
+                    className="w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
                   >
-                    {m === 'delivery' ? 'Delivery' : 'Pickup'}
-                  </button>
-                ))}
+                    {ACTIVE_OUTLETS.map((o) => (
+                      <option key={o.name} value={o.name}>
+                        {o.name}  -  {o.city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="co-slot" className="mb-1.5 block font-heading text-sm font-semibold text-neutral-700">
+                    Pickup Time
+                  </label>
+                  <select
+                    id="co-slot"
+                    value={slot}
+                    onChange={(e) => setSlot(e.target.value)}
+                    className="w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
+                  >
+                    {PICKUP_SLOTS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-
-              {cart.orderMethod === 'delivery' ? (
-                <div className="mt-5 space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label htmlFor="co-name" className="mb-1.5 block font-heading text-sm font-semibold text-neutral-700">
-                        Full Address
-                      </label>
-                      <input
-                        id="co-address"
-                        type="text"
-                        value={address}
-                        onChange={(e) => {
-                          setAddressInput(e.target.value);
-                          setAddress(e.target.value);
-                        }}
-                        placeholder="House, Road, Block, City"
-                        className="w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="co-area" className="mb-1.5 block font-heading text-sm font-semibold text-neutral-700">
-                        Area / Zone
-                      </label>
-                      <select
-                        id="co-area"
-                        value={area}
-                        onChange={(e) => setArea(e.target.value)}
-                        className="w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
-                      >
-                        <option value="">Select area</option>
-                        {AREAS.map((a) => (
-                          <option key={a} value={a}>
-                            {a}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="co-notes" className="mb-1.5 block font-heading text-sm font-semibold text-neutral-700">
-                      Delivery Notes <span className="font-normal text-neutral-400">(optional)</span>
-                    </label>
-                    <textarea
-                      id="co-notes"
-                      rows={2}
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Landmark, gate code, any instructions…"
-                      className="w-full resize-none rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="co-outlet" className="mb-1.5 block font-heading text-sm font-semibold text-neutral-700">
-                      Pickup Outlet
-                    </label>
-                    <select
-                      id="co-outlet"
-                      value={outlet}
-                      onChange={(e) => {
-                        setOutletInput(e.target.value);
-                        setOutlet(e.target.value);
-                      }}
-                      className="w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
-                    >
-                      {ACTIVE_OUTLETS.map((o) => (
-                        <option key={o.name} value={o.name}>
-                          {o.name} — {o.city}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="co-slot" className="mb-1.5 block font-heading text-sm font-semibold text-neutral-700">
-                      Pickup Time
-                    </label>
-                    <select
-                      id="co-slot"
-                      value={slot}
-                      onChange={(e) => setSlot(e.target.value)}
-                      className="w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
-                    >
-                      {PICKUP_SLOTS.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              )}
+              <p className="mt-3 text-xs text-neutral-500">
+                We&apos;ll prepare your order fresh and it will be ready for pickup at the selected outlet.
+              </p>
             </div>
 
             {/* Contact info */}
@@ -470,12 +361,6 @@ export default function CheckoutPage() {
                   <dt className="text-neutral-600">Subtotal</dt>
                   <dd className="font-heading font-semibold text-maroon">৳{subtotal.toLocaleString()}</dd>
                 </div>
-                {cart.orderMethod === 'delivery' && (
-                  <div className="flex items-center justify-between">
-                    <dt className="text-neutral-600">Delivery Fee (est.)</dt>
-                    <dd className="font-heading font-semibold text-maroon">৳{deliveryFee}</dd>
-                  </div>
-                )}
                 <div className="flex items-center justify-between border-t border-neutral-100 pt-3">
                   <dt className="font-heading font-semibold uppercase tracking-wide text-neutral-500">
                     Total

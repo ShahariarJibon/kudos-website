@@ -8,7 +8,7 @@ import { STATS } from '../data/site';
 const VALUES = [
   {
     title: 'Quality & Hygiene',
-    desc: 'Signature aroma, distinctive taste and unswerving quality & hygiene — every single day, in every single outlet.',
+    desc: 'Signature aroma, distinctive taste and unswerving quality & hygiene  -  every single day, in every single outlet.',
   },
   {
     title: 'Affordable Deals',
@@ -26,7 +26,7 @@ function AboutPage() {
       <PageHeader
         kicker="About Us"
         title="About KUDOS"
-        subtitle="From a single dream in 2020 to 18+ branches across Bangladesh — KUDOS is where great taste meets honest value."
+        subtitle="From a single dream in 2020 to 18+ branches across Bangladesh  -  KUDOS is where great taste meets honest value."
       />
 
       {/* Story */}
@@ -43,7 +43,7 @@ function AboutPage() {
               <p>
                 The signature aroma of the meal comes with distinctive taste and unswerving quality
                 &amp; hygiene. From mouthwatering burgers to the richness of rice items, from spicy
-                wings to quenching your thirst with a choco coffee freeze — there’s something for
+                wings to quenching your thirst with a choco coffee freeze  -  there’s something for
                 everyone!
               </p>
               <p>
@@ -91,7 +91,7 @@ function AboutPage() {
           <SectionTitle
             kicker="What We Stand For"
             title="Our promises to you"
-            subtitle="Every KUDOS outlet follows the same recipe — literally and figuratively."
+            subtitle="Every KUDOS outlet follows the same recipe  -  literally and figuratively."
           />
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {VALUES.map((v, i) => (

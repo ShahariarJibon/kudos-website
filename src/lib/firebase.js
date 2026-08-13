@@ -1,5 +1,5 @@
 /**
- * Firebase bootstrap (lazy) — all Firebase SDK modules are dynamic imports, so
+ * Firebase bootstrap (lazy)  -  all Firebase SDK modules are dynamic imports, so
  * the public bundle stays lean when Firebase isn't configured. Once the VITE_*
  * env vars are set and initFirebase() runs, Firestore/Auth/Storage activate.
  */

@@ -1,5 +1,5 @@
 /**
- * Shared admin UI primitives — brand-styled (#7F2020 / #FB6C00 / #E73F1E / white),
+ * Shared admin UI primitives  -  brand-styled (#7F2020 / #FB6C00 / #E73F1E / white),
  * visually distinct from the public site (dashboard look).
  */
 import { AnimatePresence, motion } from 'framer-motion';

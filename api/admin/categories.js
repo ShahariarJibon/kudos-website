@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       if (!id) return res.status(400).json({ error: 'Missing category id' });
       const items = await db.collection('menuItems').where('category', '==', id).limit(1).get();
       if (items.size > 0) {
-        return res.status(400).json({ error: 'Cannot delete — items are still assigned to this category' });
+        return res.status(400).json({ error: 'Cannot delete  -  items are still assigned to this category' });
       }
       await col.doc(id).delete();
       return res.json({ ok: true });

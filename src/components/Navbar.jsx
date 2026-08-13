@@ -1,21 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { NAV_LINKS, SITE } from '../data/site';
+import { NAV_LINKS } from '../data/site';
 import Logo from './Logo';
 import { useCart } from '../context/CartContext';
-
-const OrderNowButton = ({ className = '' }) => (
-  <a
-    href={SITE.orderUrl}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={`btn-brand ${className}`}
-    aria-label="Order Now on the KUDOS ordering platform"
-  >
-    Order Now
-  </a>
-);
 
 const CartButton = () => {
   const { totalQty, openDrawer } = useCart();
@@ -59,7 +47,7 @@ const CartButton = () => {
 };
 
 /**
- * Navbar — Apple-style "liquid glass" floating bar: translucent cream tint,
+ * Navbar  -  Apple-style "liquid glass" floating bar: translucent cream tint,
  * heavy backdrop blur + saturation, white border and glossy top sheen.
  * Mobile: hamburger + slide-in drawer. All links keyboard/touch friendly.
  */
@@ -105,7 +93,7 @@ export default function Navbar() {
           className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/50 via-white/10 to-transparent opacity-70"
         />
         <nav className="relative flex h-full w-full items-center justify-between gap-4" aria-label="Main navigation">
-        <Link to="/" aria-label="KUDOS — go to homepage" className="shrink-0">
+        <Link to="/" aria-label="KUDOS  -  go to homepage" className="shrink-0">
           <Logo />
         </Link>
 
@@ -149,7 +137,6 @@ export default function Navbar() {
 
         <div className="flex items-center gap-1.5 sm:gap-3">
           <CartButton />
-          <OrderNowButton className="hidden lg:inline-flex" />
 
           {/* Hamburger */}
           <button
@@ -243,9 +230,6 @@ export default function Navbar() {
                   </motion.li>
                 ))}
               </ul>
-              <div className="border-t border-neutral-100 p-5">
-                <OrderNowButton className="w-full" />
-              </div>
             </motion.div>
           </>
         )}

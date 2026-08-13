@@ -1,7 +1,7 @@
 import Reveal from './Reveal';
 
 /**
- * SectionTitle — consistent kicker + heading + subtitle block.
+ * SectionTitle  -  consistent kicker + heading + subtitle block.
  */
 export default function SectionTitle({ kicker, title, subtitle, align = 'center', light = false }) {
   const alignment = align === 'center' ? 'mx-auto text-center' : 'text-left';

@@ -12,7 +12,7 @@ function loadCart() {
   try {
     const raw = localStorage.getItem(CART_KEY);
     if (!raw) return emptyCart();
-    return { ...emptyCart(), ...JSON.parse(raw) };
+    return { ...emptyCart(), ...JSON.parse(raw), orderMethod: null };
   } catch {
     return emptyCart();
   }
@@ -39,8 +39,8 @@ export function CartProvider({ children }) {
   const [savedAddress, setSavedAddress] = useState(loadSavedAddress);
   const [activeItem, setActiveItem] = useState(null); // { item, sourceRect }
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [lastAdded, setLastAdded] = useState(null); // { name, ts } — for checkmark feedback
-  const [fly, setFly] = useState(null); // { from: {x,y}, ts } — fly-to-cart animation
+  const [lastAdded, setLastAdded] = useState(null); // { name, ts }  -  for checkmark feedback
+  const [fly, setFly] = useState(null); // { from: {x,y}, ts }  -  fly-to-cart animation
 
   useEffect(() => {
     try {

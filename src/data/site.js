@@ -1,4 +1,4 @@
-// Central site configuration — all real KUDOS business content, no third-party spam.
+// Central site configuration  -  all real KUDOS business content, no third-party spam.
 export const SITE = {
   name: 'KUDOS',
   tagline: 'As Good As It Gets',
@@ -8,8 +8,8 @@ export const SITE = {
   phoneHref: 'tel:+8801750209096',
   orderUrl: 'https://kudos.engaze.ai/',
   deliveryFee: 49, // estimated flat delivery fee (৳)
-  deliveryEta: '30–45 min',
-  pickupEta: '15–20 min',
+  deliveryEta: '30 - 45 min',
+  pickupEta: '15 - 20 min',
   socials: {
     facebook: {
       label: 'Facebook',
@@ -28,7 +28,7 @@ export const SITE = {
     },
   },
   hours: [
-    { days: 'Saturday – Thursday', open: '12:00 PM', close: '10:30 PM' },
+    { days: 'Saturday  -  Thursday', open: '12:00 PM', close: '10:30 PM' },
     { days: 'Friday', open: '3:00 PM', close: '11:00 PM' },
   ],
 };

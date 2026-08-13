@@ -102,7 +102,7 @@ export default function GalleryAdminPage() {
     <div className="mx-auto max-w-6xl">
       <AdminPageHeader
         title="Gallery"
-        subtitle="Photos shown in the public gallery. Upload multiple at once — they appear in order."
+        subtitle="Photos shown in the public gallery. Upload multiple at once  -  they appear in order."
         action={
           <button type="button" onClick={() => setUploadOpen(true)} className={adminBtn}>
             + Upload Images
@@ -112,7 +112,7 @@ export default function GalleryAdminPage() {
 
       {sorted.length === 0 ? (
         <div className="mt-6">
-          <EmptyState message="The gallery is empty — upload your first photos." />
+          <EmptyState message="The gallery is empty  -  upload your first photos." />
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -186,7 +186,7 @@ export default function GalleryAdminPage() {
           </label>
         </Field>
         <div className="mt-4">
-          <Field label="Caption" hint="Optional — applied to all selected images.">
+          <Field label="Caption" hint="Optional  -  applied to all selected images.">
             <TextInput value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="e.g. Bashundhara flagship outlet" />
           </Field>
         </div>

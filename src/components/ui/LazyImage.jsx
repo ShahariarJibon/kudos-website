@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 /**
- * LazyImage — responsive image with shimmer skeleton + fade-in on load.
+ * LazyImage  -  responsive image with shimmer skeleton + fade-in on load.
  * Fixed aspect container (via className) prevents layout shift.
  */
 export default function LazyImage({

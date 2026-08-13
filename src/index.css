@@ -98,7 +98,7 @@
   border-radius: 4px;
 }
 
-/* Respect users who prefer reduced motion — kill CSS animations */
+/* Respect users who prefer reduced motion  -  kill CSS animations */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

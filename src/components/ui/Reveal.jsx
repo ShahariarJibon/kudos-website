@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 
 /**
- * Reveal — scroll-triggered fade + slide wrapper.
+ * Reveal  -  scroll-triggered fade + slide wrapper.
  * Respects prefers-reduced-motion (no transform/animation).
  */
 export default function Reveal({

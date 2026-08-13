@@ -1,4 +1,4 @@
-// KUDOS outlet locations — real addresses from kudos.com.bd/contact.
+// KUDOS outlet locations  -  real addresses from kudos.com.bd/contact.
 export const OUTLETS = [
   {
     name: 'Bashundhara R/A',
@@ -122,7 +122,7 @@ export const OUTLETS = [
   },
   {
     name: 'Tejgaon',
-    address: 'AG Motors, 1st Floor, 218/B Bir Uttam Shawkat Sarak, Hatirjheel – Gulshan Tejgaon Link Rd, Dhaka-1000',
+    address: 'AG Motors, 1st Floor, 218/B Bir Uttam Shawkat Sarak, Hatirjheel  -  Gulshan Tejgaon Link Rd, Dhaka-1000',
     phone: '+88-01327-175977',
     phoneHref: 'tel:+8801327175977',
     city: 'Dhaka',

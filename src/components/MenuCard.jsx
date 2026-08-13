@@ -4,10 +4,10 @@ import LazyImage from './ui/LazyImage';
 import { useCart } from '../context/CartContext';
 
 /**
- * MenuCard — hover lift/shadow/image zoom on desktop; tap feedback on mobile.
+ * MenuCard  -  hover lift/shadow/image zoom on desktop; tap feedback on mobile.
  * The "+" button NEVER navigates: if a cart order method is set and the item
  * is already in the cart it adds +1 instantly; otherwise it opens the item
- * sheet (first add prompts for Delivery/Pickup once, cart-level).
+ * sheet (first add prompts for the pickup outlet once, cart-level).
  */
 export default function MenuCard({ item, index = 0, showCategory = false }) {
   const reduce = useReducedMotion();
@@ -25,10 +25,10 @@ export default function MenuCard({ item, index = 0, showCategory = false }) {
   const handleAdd = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     if (cart.orderMethod) {
-      // Order method already chosen once — subsequent + taps add instantly
+      // Order method already chosen once  -  subsequent + taps add instantly
       addItem(item, { qty: 1, sourceRect: rect });
     } else {
-      // First add — open the sheet to pick Delivery/Pickup once (cart-level)
+      // First add  -  open the sheet to pick the pickup outlet once (cart-level)
       openItem(item, rect);
     }
   };
@@ -42,7 +42,7 @@ export default function MenuCard({ item, index = 0, showCategory = false }) {
       <div className="aspect-[4/3] overflow-hidden">
         <LazyImage
           src={item.image}
-          alt={`${item.name} — KUDOS`}
+          alt={`${item.name}  -  KUDOS`}
           className="h-full w-full"
           imgClassName="transition-transform duration-500 group-hover:scale-110"
           width={600}

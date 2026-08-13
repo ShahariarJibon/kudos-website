@@ -13,7 +13,7 @@ function TestimonialsPage() {
       <PageHeader
         kicker="Testimonials"
         title="What our guests say"
-        subtitle="Real words from real KUDOS lovers across Dhaka and beyond — from Facebook reviews to Google ratings."
+        subtitle="Real words from real KUDOS lovers across Dhaka and beyond  -  from Facebook reviews to Google ratings."
       />
 
       <section className="section-pad bg-hero-gradient">

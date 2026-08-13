@@ -11,7 +11,7 @@ import CartFlyover from './components/CartFlyover';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 
-// Code-split pages — only load what's needed.
+// Code-split pages  -  only load what's needed.
 const Home = lazy(() => import('./pages/Home'));
 const MenuPage = lazy(() => import('./pages/MenuPage'));
 const KudoCafe = lazy(() => import('./pages/KudoCafe'));
@@ -22,7 +22,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const BoardPage = lazy(() => import('./pages/BoardPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 
-// /admin is a separate, protected section — never rendered inside public chrome.
+// /admin is a separate, protected section  -  never rendered inside public chrome.
 const AdminLogin = lazy(() => import('./pages/admin/LoginPage'));
 const RequireAuth = lazy(() => import('./components/admin/RequireAuth'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));

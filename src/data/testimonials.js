@@ -9,7 +9,7 @@ export const TESTIMONIALS = [
   {
     name: 'Rijvee Ahmed',
     role: 'Laboratorian · Facebook',
-    text: 'স্ট্রিট ফুডের রাজ্যে Kudos চলে এসেছে। নাগা উইংস এর সাথে কোল্ড কফির কম্বিনেশন এখন লক্ষীবাজারে। Naga wings with cold coffee — the perfect street-food combo in Old Dhaka!',
+    text: 'স্ট্রিট ফুডের রাজ্যে Kudos চলে এসেছে। নাগা উইংস এর সাথে কোল্ড কফির কম্বিনেশন এখন লক্ষীবাজারে। Naga wings with cold coffee  -  the perfect street-food combo in Old Dhaka!',
     branch: 'Luxmibazar, Old Dhaka',
   },
   {
@@ -33,7 +33,7 @@ export const TESTIMONIALS = [
   {
     name: 'Reza Khan',
     role: 'Google Review',
-    text: 'Great food, great vibes. The live kitchen concept makes the subs and sandwiches extra special — you can watch your order being made fresh. Definitely a must-try in Dhaka.',
+    text: 'Great food, great vibes. The live kitchen concept makes the subs and sandwiches extra special  -  you can watch your order being made fresh. Definitely a must-try in Dhaka.',
     branch: 'Google',
   },
 ];

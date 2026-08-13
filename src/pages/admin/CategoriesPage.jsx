@@ -91,7 +91,7 @@ export default function CategoriesPage() {
   const handleDelete = async () => {
     if (!deleting) return;
     if (itemCount(deleting.id) > 0) {
-      toast.error(`Cannot delete — ${itemCount(deleting.id)} menu item(s) still use this category.`);
+      toast.error(`Cannot delete  -  ${itemCount(deleting.id)} menu item(s) still use this category.`);
       setDeleting(null);
       return;
     }
@@ -139,7 +139,7 @@ export default function CategoriesPage() {
 
       {sorted.length === 0 ? (
         <div className="mt-6">
-          <EmptyState message="No categories yet — add one to start grouping menu items." />
+          <EmptyState message="No categories yet  -  add one to start grouping menu items." />
         </div>
       ) : (
         <ul className="mt-6 divide-y divide-neutral-100 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-maroon/5">

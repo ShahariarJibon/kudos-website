@@ -1,12 +1,12 @@
 /**
- * Public data layer — single source of truth for what the public site renders.
+ * Public data layer  -  single source of truth for what the public site renders.
  *
  * - Without Firebase configured: returns the bundled local data (identical output).
  * - With Firebase configured: streams live via onSnapshot so /admin edits appear
  *   without a redeploy. Seeding happens server-side (api/admin/seed.js) after
  *   the first admin sign-in.
  *
- * Firestore reads only — all writes go through the password-protected
+ * Firestore reads only  -  all writes go through the password-protected
  * /api/admin/* serverless functions.
  */
 import { useEffect, useMemo, useState } from 'react';

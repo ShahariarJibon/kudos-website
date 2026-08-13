@@ -4,7 +4,7 @@ import { AdminPageHeader, Field, LoadError, Spinner, TextInput, adminBtn } from 
 import { fetchBusinessInfo, saveBusinessInfo } from '../../services/adminService';
 
 const defaultHours = () => [
-  { days: 'Saturday – Thursday', open: '12:00 PM', close: '10:30 PM' },
+  { days: 'Saturday  -  Thursday', open: '12:00 PM', close: '10:30 PM' },
   { days: 'Friday', open: '3:00 PM', close: '11:00 PM' },
 ];
 
@@ -59,7 +59,7 @@ export default function BusinessInfoPage() {
     setSaving(true);
     try {
       await saveBusinessInfo(form);
-      toast.success('Business info saved — live on the site now');
+      toast.success('Business info saved  -  live on the site now');
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -74,7 +74,7 @@ export default function BusinessInfoPage() {
     <div className="mx-auto max-w-3xl">
       <AdminPageHeader
         title="Business Info"
-        subtitle="Hours, contact details and socials — reflected live on the Home page, Outlet page and Footer."
+        subtitle="Hours, contact details and socials  -  reflected live on the Home page, Outlet page and Footer."
       />
 
       <div className="mt-8 space-y-6">
@@ -86,7 +86,7 @@ export default function BusinessInfoPage() {
             {form.hours.map((h, i) => (
               <div key={i} className="flex flex-wrap items-end gap-3">
                 <Field label="Days" className="min-w-44 flex-1">
-                  <TextInput value={h.days} onChange={(e) => setHour(i, 'days', e.target.value)} placeholder="Saturday – Thursday" />
+                  <TextInput value={h.days} onChange={(e) => setHour(i, 'days', e.target.value)} placeholder="Saturday  -  Thursday" />
                 </Field>
                 <Field label="Open">
                   <TextInput value={h.open} onChange={(e) => setHour(i, 'open', e.target.value)} placeholder="12:00 PM" className="w-32" />
@@ -139,7 +139,7 @@ export default function BusinessInfoPage() {
             <Field label="Instagram URL">
               <TextInput type="url" value={form.instagramUrl} onChange={(e) => setForm({ ...form, instagramUrl: e.target.value })} placeholder="https://instagram.com/kudos_eat" />
             </Field>
-            <Field label="Outlet Address" hint="Optional — headline address / map link.">
+            <Field label="Outlet Address" hint="Optional  -  headline address / map link.">
               <TextInput value={form.outletAddress} onChange={(e) => setForm({ ...form, outletAddress: e.target.value })} placeholder="House 12, Road 3, Block A, Bashundhara R/A, Dhaka" />
             </Field>
           </div>

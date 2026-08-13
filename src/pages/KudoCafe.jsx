@@ -5,10 +5,10 @@ import LazyImage from '../components/ui/LazyImage';
 import { SITE } from '../data/site';
 
 const CAFE_FEATURES = [
-  { title: 'Choco Coffee Freeze', desc: 'The cold coffee sensation that made KUDOS famous — hand blended, ice cold, dangerously addictive.', icon: 'coffee' },
+  { title: 'Choco Coffee Freeze', desc: 'The cold coffee sensation that made KUDOS famous  -  hand blended, ice cold, dangerously addictive.', icon: 'coffee' },
   { title: 'Fruit Punches', desc: 'Apple, orange and fruit punches pressed fresh to brighten up your day.', icon: 'fruit' },
   { title: 'Freezes & More', desc: 'A rotating lineup of shakes and freezes served in every outlet, all day.', icon: 'shake' },
-  { title: 'Cafe Vibes', desc: 'Cozy seating, AC comfort and free Wi-Fi in flagship branches — perfect for a coffee break.', icon: 'couch' },
+  { title: 'Cafe Vibes', desc: 'Cozy seating, AC comfort and free Wi-Fi in flagship branches  -  perfect for a coffee break.', icon: 'couch' },
 ];
 
 const icon = {
@@ -44,7 +44,7 @@ function KudoCafe() {
       <PageHeader
         kicker="KudoCafe"
         title="KudoCafe"
-        subtitle="KUDOS' cosy cafe corner — cold coffees, fresh fruit punches and hand-blended freezes to pair with your favourite bites."
+        subtitle="KUDOS' cosy cafe corner  -  cold coffees, fresh fruit punches and hand-blended freezes to pair with your favourite bites."
       />
 
       {/* Cafe story */}
@@ -67,7 +67,7 @@ function KudoCafe() {
               align="left"
               kicker="The Cafe Corner"
               title="Coffee culture, KUDOS style"
-              subtitle="Born as a sub-brand of the KUDOS kitchen, KudoCafe brings café favourites to our fast food family — from the legendary Choco Coffee Freeze to bright, zesty fruit punches."
+              subtitle="Born as a sub-brand of the KUDOS kitchen, KudoCafe brings café favourites to our fast food family  -  from the legendary Choco Coffee Freeze to bright, zesty fruit punches."
             />
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
               {CAFE_FEATURES.map((f, i) => (

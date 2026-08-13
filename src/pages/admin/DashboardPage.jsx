@@ -52,7 +52,7 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-5xl">
       <AdminPageHeader
         title="Dashboard"
-        subtitle="Manage everything your customers see — changes appear on the public site instantly."
+        subtitle="Manage everything your customers see  -  changes appear on the public site instantly."
       />
 
       {!firebaseEnabled && (
@@ -88,7 +88,7 @@ export default function DashboardPage() {
                   </svg>
                 </span>
                 <span className="font-heading text-3xl font-extrabold text-maroon">
-                  {card.countKey === 'business' ? '—' : countOf(card.countKey) ?? '—'}
+                  {card.countKey === 'business' ? ' - ' : countOf(card.countKey) ?? ' - '}
                 </span>
               </div>
               <h2 className="mt-4 font-heading text-base font-bold text-maroon group-hover:text-orange">
@@ -105,7 +105,7 @@ export default function DashboardPage() {
         <p className="mt-2 text-sm leading-relaxed text-white/80">
           Sign in at <span className="font-semibold text-orange">/admin/login</span> with the single
           shared password set as <span className="font-semibold text-orange">ADMIN_PASSWORD</span> in
-          Vercel. No user accounts — edits are written server-side with the Firebase Admin SDK and
+          Vercel. No user accounts  -  edits are written server-side with the Firebase Admin SDK and
           appear on the public site instantly. The panel is never linked on the public site and is
           excluded from search indexing.
         </p>

@@ -1,5 +1,5 @@
 /**
- * Admin data service — all calls go through the password-protected Vercel
+ * Admin data service  -  all calls go through the password-protected Vercel
  * serverless functions under /api/admin/* (Firebase Admin SDK server-side).
  * No direct Firestore/Storage writes happen from the browser anymore.
  */
@@ -34,7 +34,7 @@ async function request(path, options = {}) {
   try {
     res = await fetch(`${API_BASE}${path}`, { ...options, headers: adminHeaders() });
   } catch (err) {
-    throw new Error('Could not reach the admin API — check your connection');
+    throw new Error('Could not reach the admin API  -  check your connection');
   }
 
   if (res.status === 401) {
@@ -44,7 +44,7 @@ async function request(path, options = {}) {
       /* ignore */
     }
     window.location.assign('/admin/login');
-    throw new Error('Session expired — sign in again');
+    throw new Error('Session expired  -  sign in again');
   }
 
   if (!res.ok) {

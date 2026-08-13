@@ -4,8 +4,6 @@ import PageHeader from '../components/ui/PageHeader';
 import SectionTitle from '../components/ui/SectionTitle';
 import Reveal from '../components/ui/Reveal';
 import MenuCard from '../components/MenuCard';
-import LazyImage from '../components/ui/LazyImage';
-import { MENU_POSTERS } from '../data/menu';
 import { useMenuData } from '../services/publicData';
 import { SITE } from '../data/site';
 
@@ -25,11 +23,11 @@ function MenuPage() {
       <PageHeader
         kicker="Food Menu"
         title="Our Menu"
-        subtitle="Burgers, wings, rice meals, wraps, sandwiches, fries and freezes — grilled, toasted and shaken fresh in our live kitchen."
+        subtitle="Burgers, wings, rice meals, wraps, sandwiches, fries and freezes  -  grilled, toasted and shaken fresh in our live kitchen."
       />
 
       {/* Category filter */}
-      <section className="sticky top-16 z-30 py-3 sm:top-[76px] sm:py-4">
+      <section className="py-3 sm:py-4">
         <div
           className="relative mx-auto flex max-w-7xl gap-1.5 overflow-x-auto rounded-2xl border border-white/70 bg-[#F7F1DE]/60 px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_12px_32px_-16px_rgba(127,32,32,0.28)] backdrop-blur-2xl backdrop-saturate-150"
           role="tablist"
@@ -100,33 +98,6 @@ function MenuPage() {
               Prices may vary slightly across outlets · Visit any branch for the complete live menu
             </p>
           </Reveal>
-        </div>
-      </section>
-
-      {/* Full printed menu posters */}
-      <section className="section-pad bg-white">
-        <div className="container-kudos">
-          <SectionTitle
-            kicker="Full Menu"
-            title="The Complete KUDOS Menu"
-            subtitle="Browse the full printed menu below — every item, every category, in one place."
-          />
-          <div className="mt-12 grid gap-8 lg:grid-cols-3">
-            {MENU_POSTERS.map((p, i) => (
-              <Reveal key={p.src} delay={i * 0.1}>
-                <figure className="overflow-hidden rounded-2xl shadow-card ring-1 ring-maroon/5">
-                  <LazyImage
-                    src={p.src}
-                    alt={p.alt}
-                    className="aspect-[3/4] w-full"
-                    imgClassName="transition-transform duration-500 hover:scale-105"
-                    width={800}
-                    height={1067}
-                  />
-                </figure>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 

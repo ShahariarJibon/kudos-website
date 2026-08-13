@@ -169,7 +169,7 @@ export default function TestimonialsAdminPage() {
 
       {list.length === 0 ? (
         <div className="mt-6">
-          <EmptyState message="No testimonials yet — add your first customer review." />
+          <EmptyState message="No testimonials yet  -  add your first customer review." />
         </div>
       ) : (
         <ul className="mt-6 divide-y divide-neutral-100 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-maroon/5">

@@ -1,7 +1,7 @@
 import Reveal from './Reveal';
 
 /**
- * PageHeader — animated hero band used at the top of inner pages.
+ * PageHeader  -  animated hero band used at the top of inner pages.
  */
 export default function PageHeader({ kicker, title, subtitle }) {
   return (

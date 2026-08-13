@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
- * ScrollToTop — resets scroll position on route change.
+ * ScrollToTop  -  resets scroll position on route change.
  */
 export default function ScrollToTop() {
   const { pathname } = useLocation();

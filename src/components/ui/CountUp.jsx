@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useInView, useReducedMotion } from 'framer-motion';
 
 /**
- * CountUp — animates a number when it scrolls into view.
+ * CountUp  -  animates a number when it scrolls into view.
  * Falls back to instant render when prefers-reduced-motion.
  */
 export default function CountUp({ to, suffix = '', duration = 1.6, className = '' }) {

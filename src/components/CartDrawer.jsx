@@ -3,13 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { ACTIVE_OUTLETS } from '../data/outlets';
-import { SITE } from '../data/site';
 import QuantityStepper from './ui/QuantityStepper';
 
 /**
- * CartDrawer — slide-in drawer (desktop) / full-screen sheet (mobile).
- * Inline quantity editing, cart-level Delivery/Pickup toggle, subtotal,
- * and a single checkout action that moves to the in-app /checkout route.
+ * CartDrawer  -  slide-in drawer (desktop) / full-screen sheet (mobile).
+ * Inline quantity editing, pickup outlet selection (Order for Prepare),
+ * subtotal, and a single checkout action that moves to the in-app /checkout route.
  */
 export default function CartDrawer() {
   const {
@@ -18,23 +17,20 @@ export default function CartDrawer() {
     closeDrawer,
     updateQty,
     removeItem,
-    setOrderMethod,
-    setAddress,
     setOutlet,
     totalQty,
     subtotal,
-    rememberAddress,
   } = useCart();
   const reduce = useReducedMotion();
   const navigate = useNavigate();
 
-  const [address, setAddressInput] = useState(cart.address || '');
-  const [outlet, setOutletInput] = useState(cart.outlet || '');
+  const [outlet, setOutletInput] = useState(
+    cart.outlet || ACTIVE_OUTLETS.find((o) => o.flagship)?.name || ACTIVE_OUTLETS[0]?.name || ''
+  );
 
   useEffect(() => {
-    setAddressInput(cart.address || '');
     setOutletInput(cart.outlet || ACTIVE_OUTLETS.find((o) => o.flagship)?.name || ACTIVE_OUTLETS[0]?.name || '');
-  }, [cart.address, cart.outlet, drawerOpen]);
+  }, [cart.outlet, drawerOpen]);
 
   // Escape + scroll lock
   useEffect(() => {
@@ -49,16 +45,10 @@ export default function CartDrawer() {
   }, [drawerOpen, closeDrawer]);
 
   const handleCheckout = () => {
-    // Persist any inline address/outlet edits before leaving the drawer
-    if (cart.orderMethod === 'delivery' && address.trim()) {
-      setAddress(address.trim());
-      rememberAddress(address.trim());
-    }
-    if (cart.orderMethod === 'pickup' && outlet) {
-      setOutlet(outlet);
-    }
+    // Persist any inline outlet edits before leaving the drawer
+    if (outlet) setOutlet(outlet);
     closeDrawer();
-    navigate('/checkout'); // in-app checkout — never redirects off-site
+    navigate('/checkout'); // in-app checkout  -  never redirects off-site
   };
 
   return (
@@ -106,79 +96,33 @@ export default function CartDrawer() {
               </button>
             </div>
 
-            {/* Method toggle (cart-level) */}
+            {/* Order for Prepare (pickup only) */}
             {cart.items.length > 0 && (
               <div className="border-b border-neutral-100 px-5 py-4">
                 <p className="font-heading text-xs font-bold uppercase tracking-wide text-neutral-500">
-                  Order Method
+                  Order for Prepare
                 </p>
-                <div className="mt-2 grid grid-cols-2 gap-1 rounded-full bg-neutral-100 p-1" role="radiogroup" aria-label="Order method">
-                  {['delivery', 'pickup'].map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      role="radio"
-                      aria-checked={cart.orderMethod === m}
-                      onClick={() => setOrderMethod(m)}
-                      className={`min-h-[44px] rounded-full font-heading text-sm font-bold uppercase tracking-wide transition-all duration-300 ${
-                        cart.orderMethod === m
-                          ? 'bg-brand-gradient text-white shadow-glow'
-                          : 'text-neutral-600 hover:text-maroon'
-                      }`}
-                    >
-                      {m === 'delivery' ? 'Delivery' : 'Pickup'}
-                    </button>
-                  ))}
+                <div className="mt-2">
+                  <label htmlFor="cart-outlet" className="font-heading text-sm font-semibold text-neutral-700">
+                    Pickup Outlet
+                  </label>
+                  <select
+                    id="cart-outlet"
+                    value={outlet}
+                    onChange={(e) => {
+                      setOutletInput(e.target.value);
+                      setOutlet(e.target.value);
+                    }}
+                    className="mt-1.5 w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
+                  >
+                    {ACTIVE_OUTLETS.map((o) => (
+                      <option key={o.name} value={o.name}>
+                        {o.name}  -  {o.city}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-2 text-xs text-neutral-500">Ready in 15 - 20 min after confirmation.</p>
                 </div>
-
-                {cart.orderMethod === 'delivery' && (
-                  <div className="mt-3">
-                    <label htmlFor="cart-address" className="font-heading text-sm font-semibold text-neutral-700">
-                      Delivery Address
-                    </label>
-                    <input
-                      id="cart-address"
-                      type="text"
-                      value={address}
-                      onChange={(e) => setAddressInput(e.target.value)}
-                      placeholder="House, Road, Area, City"
-                      onBlur={() => {
-                        if (address.trim()) {
-                          setAddress(address.trim());
-                          rememberAddress(address.trim());
-                        }
-                      }}
-                      className="mt-1.5 w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
-                    />
-                    <p className="mt-2 text-xs text-neutral-500">
-                      Delivery fee ৳{SITE.deliveryFee} (est.) · {SITE.deliveryEta}
-                    </p>
-                  </div>
-                )}
-
-                {cart.orderMethod === 'pickup' && (
-                  <div className="mt-3">
-                    <label htmlFor="cart-outlet" className="font-heading text-sm font-semibold text-neutral-700">
-                      Pickup Outlet
-                    </label>
-                    <select
-                      id="cart-outlet"
-                      value={outlet}
-                      onChange={(e) => {
-                        setOutletInput(e.target.value);
-                        setOutlet(e.target.value);
-                      }}
-                      className="mt-1.5 w-full rounded-xl border border-maroon/15 bg-neutral-50 px-4 py-3 text-sm outline-none transition-colors focus:border-orange focus:bg-white"
-                    >
-                      {ACTIVE_OUTLETS.map((o) => (
-                        <option key={o.name} value={o.name}>
-                          {o.name} — {o.city}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="mt-2 text-xs text-neutral-500">Ready in 15–20 min after confirmation.</p>
-                  </div>
-                )}
               </div>
             )}
 
@@ -250,7 +194,7 @@ export default function CartDrawer() {
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Delivery fee &amp; taxes added at checkout.
+                  Taxes added at checkout.
                 </p>
                 <button
                   type="button"

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 /**
- * TestimonialSlider — auto-playing, manually swipeable testimonial carousel.
+ * TestimonialSlider  -  auto-playing, manually swipeable testimonial carousel.
  * Features: arrow buttons, dots, touch drag, keyboard accessible.
  */
 export default function TestimonialSlider({ items, autoInterval = 6000 }) {

@@ -1,7 +1,7 @@
 import { SITE } from '../data/site';
 
 /**
- * KUDOS logo — official brand mark (logo.png), transparent background.
+ * KUDOS logo  -  official brand mark (logo.png), transparent background.
  * Works on white navbar, light drawer and maroon footer.
  */
 export default function Logo({ className = '', alt }) {

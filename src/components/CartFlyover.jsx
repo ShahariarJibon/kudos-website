@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { useCart } from '../context/CartContext';
 
 /**
- * CartFlyover — micro fly-to-cart animation.
+ * CartFlyover  -  micro fly-to-cart animation.
  * A small brand-colored circle travels from the tapped item to the navbar cart badge.
  */
 export default function CartFlyover() {

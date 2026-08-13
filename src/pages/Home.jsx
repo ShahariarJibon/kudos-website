@@ -111,10 +111,7 @@ function Hero() {
             distinctive taste and unswerving quality &amp; hygiene.
           </motion.p>
           <motion.div variants={itemVariants} className="mt-8 flex flex-wrap items-center gap-4">
-            <a href={SITE.orderUrl} target="_blank" rel="noopener noreferrer" className="btn-brand !text-base">
-              Order Now
-            </a>
-            <Link to="/menu" className="btn-outline">
+            <Link to="/menu" className="btn-brand !text-base">
               Explore Menu
             </Link>
           </motion.div>
@@ -178,7 +175,7 @@ function Home() {
           <SectionTitle
             kicker="Most Loved"
             title="Crowd Favourites"
-            subtitle="From flame-grilled burgers to smoky rice meals and ice-cold freezes — a taste of what keeps Dhaka coming back."
+            subtitle="From flame-grilled burgers to smoky rice meals and ice-cold freezes  -  a taste of what keeps Dhaka coming back."
           />
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {items.slice(0, 8).map((item, i) => (
@@ -204,7 +201,7 @@ function Home() {
                 align="left"
                 kicker="Visit Us"
                 title="Opening Hours & Contact"
-                subtitle="Walk in, call ahead, or order online — we are here for your cravings."
+                subtitle="Walk in, call ahead, or order online  -  we are here for your cravings."
               />
               <div className="mt-8 grid gap-6 sm:grid-cols-2">
                 <div>
@@ -216,12 +213,12 @@ function Home() {
                       <li key={h.days} className="flex items-center justify-between gap-4 rounded-xl bg-neutral-50 px-4 py-3">
                         <span className="font-medium text-neutral-700">{h.days}</span>
                         <span className="font-heading font-bold text-maroon">
-                          {h.open} – {h.close}
+                          {h.open}  -  {h.close}
                         </span>
                       </li>
                     ))}
                     <li className="rounded-xl bg-maroon px-4 py-3 text-sm text-white">
-                      Closed on public holidays — follow our socials for updates.
+                      Closed on public holidays  -  follow our socials for updates.
                     </li>
                   </ul>
                 </div>
@@ -278,7 +275,7 @@ function Home() {
         </div>
       </section>
 
-      {/* CTA Band — order online + full menu list */}
+      {/* CTA Band  -  order online + full menu list */}
       <section className="pb-20 sm:pb-24" aria-label="Order online band">
         <div className="container-kudos">
           <Reveal>
@@ -291,7 +288,7 @@ function Home() {
                   Hungry? Good. <br className="hidden sm:block" /> That&apos;s the plan.
                 </h2>
                 <p className="mt-4 max-w-xl text-white/90">
-                  Skip the queue — browse the full menu, pick your KUDOS favourites and order in
+                  Skip the queue  -  browse the full menu, pick your KUDOS favourites and order in
                   just a few taps.
                 </p>
                 <Link

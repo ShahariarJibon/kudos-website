@@ -193,7 +193,7 @@ export default function MenuItemsPage() {
 
       {visible.length === 0 ? (
         <div className="mt-6">
-          <EmptyState message={filter === 'all' ? 'No menu items yet — add your first one.' : 'No items in this category.'} />
+          <EmptyState message={filter === 'all' ? 'No menu items yet  -  add your first one.' : 'No items in this category.'} />
         </div>
       ) : (
         <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-maroon/5">
@@ -290,7 +290,7 @@ export default function MenuItemsPage() {
               ))}
             </Select>
           </Field>
-          <Field label="Price (৳)" required hint="Number only — the ৳ symbol is added automatically.">
+          <Field label="Price (৳)" required hint="Number only  -  the ৳ symbol is added automatically.">
             <TextInput type="number" min="0" step="1" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="169" />
           </Field>
           <Field label="Available on menu">

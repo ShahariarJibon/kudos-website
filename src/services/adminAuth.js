@@ -1,5 +1,5 @@
 /**
- * Admin session — a single shared password, kept in sessionStorage only.
+ * Admin session  -  a single shared password, kept in sessionStorage only.
  * Closing the tab clears it; the password is sent as the x-admin-password
  * header to /api/admin/* on every request.
  */

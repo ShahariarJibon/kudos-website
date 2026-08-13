@@ -47,7 +47,7 @@ export default function LoginPage() {
         <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-maroon/5">
           <div className="bg-brand-gradient px-8 py-8 text-center text-white">
             <h1 className="font-heading text-2xl font-extrabold">KUDOS Admin</h1>
-            <p className="mt-1 text-sm text-white/85">Staff panel — menu &amp; content management</p>
+            <p className="mt-1 text-sm text-white/85">Staff panel  -  menu &amp; content management</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-5 px-8 py-8">
             <Field label="Admin password" required>
@@ -64,7 +64,7 @@ export default function LoginPage() {
               {busy ? 'Signing in…' : 'Sign In'}
             </button>
             <p className="rounded-xl bg-orange/10 px-4 py-3 text-center text-xs leading-relaxed text-neutral-600">
-              One shared password — set as the{' '}
+              One shared password  -  set as the{' '}
               <span className="font-semibold text-maroon">ADMIN_PASSWORD</span> environment variable
               in Vercel. No user accounts.
             </p>
