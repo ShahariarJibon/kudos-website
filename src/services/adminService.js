@@ -128,8 +128,8 @@ export const saveBusinessInfo = (data) => put('/business-info', data);
 
 /* ------------------------------ Misc --------------------------------- */
 
-export const swapOrder = (collection, idA, orderA, idB, orderB) =>
-  post('/swap-order', { collection, idA, orderA, idB, orderB });
+export const swapOrder = (collection, idA, idB) =>
+  post('/swap-order', { collection, idA, idB });
 
 export const renumberCollection = (collection) => post('/renumber', { collection });
 
