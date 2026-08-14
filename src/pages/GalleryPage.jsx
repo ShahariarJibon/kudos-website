@@ -74,9 +74,9 @@ function GalleryPage() {
             title="Food & Outlets"
             subtitle="Tap any photo to view it full size."
           />
-          <div className="mt-12 columns-2 gap-4 sm:columns-3 lg:columns-4 [column-fill:_balance]">
+          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {images.map((g, i) => (
-              <Reveal key={g.src + i} delay={(i % 4) * 0.05} className="mb-4 break-inside-avoid">
+              <Reveal key={g.src + i} delay={(i % 4) * 0.05}>
                 <button
                   type="button"
                   onClick={() => setLightboxIndex(i)}
@@ -86,10 +86,10 @@ function GalleryPage() {
                   <LazyImage
                     src={g.src}
                     alt={g.alt}
-                    className={`w-full ${i % 3 === 0 ? 'aspect-square' : 'aspect-[3/4]'}`}
+                    className="aspect-[3/4] w-full"
                     imgClassName="transition-transform duration-500 group-hover:scale-110"
                     width={600}
-                    height={i % 3 === 0 ? 600 : 800}
+                    height={800}
                   />
                 </button>
               </Reveal>

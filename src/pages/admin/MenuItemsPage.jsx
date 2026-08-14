@@ -58,13 +58,27 @@ export default function MenuItemsPage() {
     load().catch((err) => setLoadError(err?.message || 'Something went wrong'));
   };
 
+  // Rank of each category so the "All categories" view matches the customer
+  // menu (grouped by category) instead of a flat interleaved sequence  -  this
+  // way every reorder in admin is visible on the customer side 1:1.
+  const catRank = useMemo(() => {
+    const m = new Map();
+    categories.forEach((c, i) => m.set(c.id || c.slug, i));
+    return m;
+  }, [categories]);
+
   const visible = useMemo(() => {
     if (!items) return [];
-    const sorted = [...items].sort(
-      (a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.name ?? '').localeCompare(String(b.name ?? ''))
-    );
+    const sorted = [...items].sort((a, b) => {
+      if (filter === 'all') {
+        const ca = catRank.get(a.category) ?? Number.MAX_SAFE_INTEGER;
+        const cb = catRank.get(b.category) ?? Number.MAX_SAFE_INTEGER;
+        if (ca !== cb) return ca - cb;
+      }
+      return (a.order ?? 0) - (b.order ?? 0) || String(a.name ?? '').localeCompare(String(b.name ?? ''));
+    });
     return filter === 'all' ? sorted : sorted.filter((it) => it.category === filter);
-  }, [items, filter]);
+  }, [items, filter, catRank]);
 
   const catLabel = (slug) => categories.find((c) => c.id === slug || c.slug === slug)?.name || slug;
 
