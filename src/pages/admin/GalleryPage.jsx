@@ -12,7 +12,14 @@ import {
   adminBtn,
   adminBtnGhost,
 } from '../../components/admin/AdminUI';
-import { addGalleryImage, deleteGalleryImage, fetchGallery, swapOrder, uploadImage } from '../../services/adminService';
+import {
+  addGalleryImage,
+  deleteGalleryImage,
+  fetchGallery,
+  healOrdering,
+  swapOrder,
+  uploadImage,
+} from '../../services/adminService';
 
 export default function GalleryAdminPage() {
   const [images, setImages] = useState(null);
@@ -25,7 +32,7 @@ export default function GalleryAdminPage() {
   const [deleteBusy, setDeleteBusy] = useState(false);
 
   const load = async () => {
-    setImages(await fetchGallery());
+    setImages(healOrdering(await fetchGallery(), 'galleryImages'));
   };
 
   useEffect(() => {
@@ -66,16 +73,23 @@ export default function GalleryAdminPage() {
     }
   };
 
-  const move = async (img, dir) => {
+  const move = (img, dir) => {
     const idx = sorted.findIndex((g) => g.id === img.id);
     const target = sorted[idx + dir];
     if (!target) return;
-    try {
-      await swapOrder('galleryImages', img.id, img.order ?? 0, target.id, target.order ?? 0);
-      await load();
-    } catch (err) {
+    // Optimistic  -  reorder instantly in the admin list, save in the background.
+    const orderA = img.order ?? 0;
+    const orderB = target.order ?? 0;
+    const prev = images;
+    setImages((list) =>
+      list.map((g) =>
+        g.id === img.id ? { ...g, order: orderB } : g.id === target.id ? { ...g, order: orderA } : g
+      )
+    );
+    swapOrder('galleryImages', img.id, target.id).catch((err) => {
+      setImages(prev);
       toast.error(err.message);
-    }
+    });
   };
 
   const handleDelete = async () => {

@@ -21,6 +21,7 @@ import {
   deleteMenuItem,
   fetchCategories,
   fetchMenuItems,
+  healOrdering,
   swapOrder,
   updateMenuItem,
   uploadImage,
@@ -44,7 +45,7 @@ export default function MenuItemsPage() {
   const load = async () => {
     const [c, i] = await Promise.all([fetchCategories(), fetchMenuItems()]);
     setCategories(c);
-    setItems(i);
+    setItems(healOrdering(i, 'menuItems'));
   };
 
   useEffect(() => {
@@ -59,7 +60,9 @@ export default function MenuItemsPage() {
 
   const visible = useMemo(() => {
     if (!items) return [];
-    const sorted = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const sorted = [...items].sort(
+      (a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.name ?? '').localeCompare(String(b.name ?? ''))
+    );
     return filter === 'all' ? sorted : sorted.filter((it) => it.category === filter);
   }, [items, filter]);
 
@@ -149,17 +152,25 @@ export default function MenuItemsPage() {
     }
   };
 
-  const move = async (item, dir) => {
+  const move = (item, dir) => {
     const group = visible;
     const idx = group.findIndex((it) => it.id === item.id);
     const target = group[idx + dir];
     if (!target) return;
-    try {
-      await swapOrder('menuItems', item.id, item.order ?? 0, target.id, target.order ?? 0);
-      await load();
-    } catch (err) {
+
+    // Optimistic  -  reorder instantly in the admin list, save in the background.
+    const orderA = item.order ?? 0;
+    const orderB = target.order ?? 0;
+    const prev = items;
+    setItems((list) =>
+      list.map((it) =>
+        it.id === item.id ? { ...it, order: orderB } : it.id === target.id ? { ...it, order: orderA } : it
+      )
+    );
+    swapOrder('menuItems', item.id, target.id).catch((err) => {
+      setItems(prev);
       toast.error(err.message);
-    }
+    });
   };
 
   if (!items) {

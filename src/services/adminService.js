@@ -131,5 +131,28 @@ export const saveBusinessInfo = (data) => put('/business-info', data);
 export const swapOrder = (collection, idA, orderA, idB, orderB) =>
   post('/swap-order', { collection, idA, orderA, idB, orderB });
 
+export const renumberCollection = (collection) => post('/renumber', { collection });
+
+/**
+ * If any entries share the same order value (old data from before swaps were
+ * renumbered), fix them locally right away and persist the fix in the
+ * background so the public side stops showing a scrambled sequence.
+ */
+export function healOrdering(list, collection) {
+  const seen = new Set();
+  for (const it of list) {
+    const o = it.order ?? 0;
+    if (seen.has(o)) {
+      const healed = list.map((it2, i) => ({ ...it2, order: i }));
+      renumberCollection(collection).catch(() => {
+        /* server-side heal retried on the next swap or page load */
+      });
+      return healed;
+    }
+    seen.add(o);
+  }
+  return list;
+}
+
 /** Seed Firestore from the bundled data (server-side) if collections are empty. */
 export const seedDatabase = () => post('/seed');

@@ -91,7 +91,16 @@ export function useMenuData() {
         price: taka(it.price),
         desc: it.description,
         category: catById.get(it.category) || it.category,
+        order: it.order ?? 0,
       }));
+
+    // Deterministic per-category order  -  order value, then name as a
+    // tiebreaker so items never look scrambled, even on stale data.
+    const byCategory = (name) =>
+      items
+        .filter((it) => it.category === name)
+        .sort((a, b) => a.order - b.order || String(a.name).localeCompare(String(b.name)))
+        .map(({ order, ...rest }) => rest);
 
     const categories = liveCategories.map((c) => {
       const fallback = MENU_CATEGORIES.find((m) => m.id === c.slug || m.id === c.id);
@@ -99,7 +108,7 @@ export function useMenuData() {
         id: c.slug || c.id,
         label: c.name || c.id,
         blurb: fallback?.blurb || '',
-        items: items.filter((it) => it.category === (c.name || c.id)),
+        items: byCategory(c.name || c.id),
       };
     });
 

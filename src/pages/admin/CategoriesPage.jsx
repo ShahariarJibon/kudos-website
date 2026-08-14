@@ -17,6 +17,7 @@ import {
   deleteCategory,
   fetchCategories,
   fetchMenuItems,
+  healOrdering,
   swapOrder,
   updateCategory,
 } from '../../services/adminService';
@@ -34,7 +35,7 @@ export default function CategoriesPage() {
 
   const load = async () => {
     const [c, i] = await Promise.all([fetchCategories(), fetchMenuItems()]);
-    setCategories(c);
+    setCategories(healOrdering(c, 'categories'));
     setItems(i);
   };
 
@@ -49,7 +50,12 @@ export default function CategoriesPage() {
   };
 
   const sorted = useMemo(
-    () => (categories ? [...categories].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : []),
+    () =>
+      categories
+        ? [...categories].sort(
+            (a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.name ?? '').localeCompare(String(b.name ?? ''))
+          )
+        : [],
     [categories]
   );
 
@@ -108,16 +114,23 @@ export default function CategoriesPage() {
     }
   };
 
-  const move = async (cat, dir) => {
+  const move = (cat, dir) => {
     const idx = sorted.findIndex((c) => c.id === cat.id);
     const target = sorted[idx + dir];
     if (!target) return;
-    try {
-      await swapOrder('categories', cat.id, cat.order ?? 0, target.id, target.order ?? 0);
-      await load();
-    } catch (err) {
+    // Optimistic  -  reorder instantly in the admin list, save in the background.
+    const orderA = cat.order ?? 0;
+    const orderB = target.order ?? 0;
+    const prev = categories;
+    setCategories((list) =>
+      list.map((c) =>
+        c.id === cat.id ? { ...c, order: orderB } : c.id === target.id ? { ...c, order: orderA } : c
+      )
+    );
+    swapOrder('categories', cat.id, target.id).catch((err) => {
+      setCategories(prev);
       toast.error(err.message);
-    }
+    });
   };
 
   if (!categories) {
