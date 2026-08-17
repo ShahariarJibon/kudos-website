@@ -135,7 +135,17 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="container-kudos flex flex-col items-center justify-between gap-3 py-6 text-xs text-white/50 sm:flex-row">
           <p>Copyright © KUDOS {new Date().getFullYear()} | All rights reserved.</p>
-          <p>Developed by SilkCity Technology</p>
+          <p>
+            Developed by{' '}
+            <a
+              href="https://endevoai.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-white/70 transition-colors hover:text-orange"
+            >
+              ENDEVO
+            </a>
+          </p>
         </div>
       </div>
     </footer>

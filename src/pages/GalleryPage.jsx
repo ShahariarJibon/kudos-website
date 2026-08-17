@@ -70,9 +70,9 @@ function GalleryPage() {
       <section className="section-pad py-10">
         <div className="container-kudos">
           <SectionTitle
-            kicker="Moments"
-            title="Food & Outlets"
-            subtitle="Tap any photo to view it full size."
+            kicker="Branches"
+            title="Our Outlets"
+            subtitle="Step inside KUDOS outlets across Bangladesh  -  tap any photo to view it full size."
           />
           <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {images.map((g, i) => (

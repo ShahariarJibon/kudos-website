@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { SITE, STATS } from '../data/site';
-import { useBusinessInfo, useMenuData } from '../services/publicData';
+import { useBusinessInfo, useDeals, useMenuData } from '../services/publicData';
 import MenuCard from '../components/MenuCard';
 import AutoCarousel from '../components/AutoCarousel';
 import Reveal from '../components/ui/Reveal';
@@ -144,24 +144,27 @@ function Hero() {
 
 function Home() {
   const { items } = useMenuData();
+  const { deals, offers } = useDeals();
   const info = useBusinessInfo();
   const signatureItems = SIGNATURE_NAMES.map((name) => items.find((i) => i.name === name)).filter(Boolean);
+  const carouselItems = deals.length > 0 ? deals : signatureItems;
+  const offerItems = offers.length > 0 ? offers : items.slice(0, 8);
 
   return (
     <>
       <Hero />
 
-      {/* Food carousel */}
-      <section className="py-10" aria-label="Signature dishes showcase">
+      {/* Food carousel  -  admin-picked hot deals, falls back to signatures */}
+      <section className="py-10" aria-label="Our hot deals showcase">
         <div className="container-kudos">
           <p className="mb-6 text-center font-heading text-sm font-semibold uppercase tracking-[0.2em] text-maroon">
-            Fresh from the live kitchen
+            Our Hot Deals
           </p>
         </div>
-        {signatureItems.length > 0 && (
+        {carouselItems.length > 0 && (
           <AutoCarousel ariaLabel="Auto-scrolling food showcase">
-            {signatureItems.map((item) => (
-              <div key={item.name} className="w-56 shrink-0 sm:w-64">
+            {carouselItems.map((item) => (
+              <div key={item.id || item.name} className="w-56 shrink-0 sm:w-64">
                 <MenuCard item={item} />
               </div>
             ))}
@@ -169,18 +172,18 @@ function Home() {
         )}
       </section>
 
-      {/* Menu preview */}
+      {/* Menu preview  -  admin-picked discounted offers */}
       <section className="section-pad bg-white">
         <div className="container-kudos">
           <SectionTitle
-            kicker="Most Loved"
-            title="Crowd Favourites"
-            subtitle="From flame-grilled burgers to smoky rice meals and ice-cold freezes  -  a taste of what keeps Dhaka coming back."
+            kicker="Special Offers"
+            title="Today's Offer"
+            subtitle="Grab today's hot offers  -  discounted KUDOS favourites, fresh from the kitchen."
           />
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {items.slice(0, 8).map((item, i) => (
-              <Reveal key={item.name} delay={(i % 4) * 0.08}>
-                <MenuCard item={item} showCategory />
+            {offerItems.map((item, i) => (
+              <Reveal key={item.id || item.name} delay={(i % 4) * 0.08}>
+                <MenuCard item={item} showCategory offerPercent={item.discountPercent} />
               </Reveal>
             ))}
           </div>

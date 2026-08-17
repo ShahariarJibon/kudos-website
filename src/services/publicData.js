@@ -118,6 +118,56 @@ export function useMenuData() {
   return data;
 }
 
+/* ------------------------- Deals & offers ---------------------------- */
+
+/**
+ * Home page specials  -  "Our Hot Deals" carousel items (deals collection)
+ * and "Today's Offer" cards with discount % (offers collection). Both store
+ * a menuItemId + order and are joined against live menuItems, so edits in
+ * the admin panel appear on the public site without a redeploy.
+ */
+export function useDeals() {
+  const liveDeals = useCollectionData('deals', { fallback: [] });
+  const liveOffers = useCollectionData('offers', { fallback: [] });
+  const liveItems = useCollectionData('menuItems', { fallback: [] });
+
+  return useMemo(() => {
+    const itemById = new Map(
+      liveItems
+        .filter((it) => it.available !== false)
+        .map((it) => [
+          it.id,
+          {
+            name: it.name,
+            image: it.imageUrl,
+            price: taka(it.price),
+            desc: it.description,
+            category: it.category,
+          },
+        ])
+    );
+
+    const byOrder = (a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.name ?? '').localeCompare(String(b.name ?? ''));
+
+    const deals = liveDeals
+      .map((d) => ({ ...itemById.get(d.menuItemId), id: d.id, order: d.order ?? 0 }))
+      .filter((d) => d && d.name)
+      .sort(byOrder);
+
+    const offers = liveOffers
+      .map((d) => ({
+        ...itemById.get(d.menuItemId),
+        id: d.id,
+        discountPercent: Number(d.discountPercent) || 0,
+        order: d.order ?? 0,
+      }))
+      .filter((d) => d && d.name && d.discountPercent > 0)
+      .sort(byOrder);
+
+    return { deals, offers };
+  }, [liveDeals, liveOffers, liveItems]);
+}
+
 /* ------------------------------- Gallery ------------------------------ */
 
 export const GALLERY_FALLBACK = [

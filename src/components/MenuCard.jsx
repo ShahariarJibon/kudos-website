@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import LazyImage from './ui/LazyImage';
+import DiscountStar from './DiscountStar';
 import { useCart } from '../context/CartContext';
 
 /**
@@ -9,7 +10,7 @@ import { useCart } from '../context/CartContext';
  * is already in the cart it adds +1 instantly; otherwise it opens the item
  * sheet (first add prompts for the pickup outlet once, cart-level).
  */
-export default function MenuCard({ item, index = 0, showCategory = false }) {
+export default function MenuCard({ item, index = 0, showCategory = false, offerPercent = 0 }) {
   const reduce = useReducedMotion();
   const { cart, openItem, addItem, lastAdded } = useCart();
   const [checked, setChecked] = useState(false);
@@ -40,6 +41,7 @@ export default function MenuCard({ item, index = 0, showCategory = false }) {
       className="group relative overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-maroon/5 transition-shadow duration-300 hover:shadow-glow"
     >
       <div className="aspect-[4/3] overflow-hidden">
+        {offerPercent > 0 && <DiscountStar percent={offerPercent} />}
         <LazyImage
           src={item.image}
           alt={`${item.name}  -  KUDOS`}

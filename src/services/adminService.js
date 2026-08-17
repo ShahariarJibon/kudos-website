@@ -126,6 +126,17 @@ export const deleteTestimonial = (id) => del(`/testimonials?id=${encodeURICompon
 export const fetchBusinessInfo = () => get('/business-info');
 export const saveBusinessInfo = (data) => put('/business-info', data);
 
+/* ------------------------- Deals & offers ---------------------------- */
+
+export const fetchDeals = () => get('/deals');
+export const addDeal = (menuItemId) => post('/deals', { kind: 'deal', menuItemId });
+export const addOffer = (menuItemId, discountPercent) =>
+  post('/deals', { kind: 'offer', menuItemId, discountPercent });
+export const updateOffer = (id, discountPercent) =>
+  put('/deals', { kind: 'offer', id, discountPercent });
+export const deleteDeal = (id) => del(`/deals?kind=deal&id=${encodeURIComponent(id)}`);
+export const deleteOffer = (id) => del(`/deals?kind=offer&id=${encodeURIComponent(id)}`);
+
 /* ------------------------------ Misc --------------------------------- */
 
 export const swapOrder = (collection, idA, idB) =>

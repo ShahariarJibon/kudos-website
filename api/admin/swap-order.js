@@ -1,6 +1,6 @@
 import { adminServices, checkAdminPassword, jsonError, methodNotAllowed, readBody } from '../../lib/admin.js';
 
-const COLLECTIONS = ['menuItems', 'categories', 'galleryImages', 'testimonials'];
+const COLLECTIONS = ['menuItems', 'categories', 'galleryImages', 'testimonials', 'deals', 'offers'];
 
 export default async function handler(req, res) {
   if (!checkAdminPassword(req, res)) return;
