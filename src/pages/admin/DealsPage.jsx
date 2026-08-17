@@ -110,6 +110,7 @@ export default function DealsPage() {
   const [loadError, setLoadError] = useState(null);
   const [picker, setPicker] = useState(null);
   const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState(new Set());
   const [deleting, setDeleting] = useState(null);
 
   const load = async () => {
@@ -169,33 +170,39 @@ export default function DealsPage() {
   const openPicker = (kind) => {
     setPicker({ kind });
     setSearch('');
+    setSelected(new Set());
   };
 
-  const handleAdd = (itemId) => {
-    if (!picker) return;
-    const kind = picker.kind;
-    const it = itemById.get(itemId);
+  /**
+   * Add several menu items at once. Each row appears instantly (optimistic,
+   * client-generated id, saved in the background) so the picker can stay open.
+   */
+  const addEntries = (kind, itemIds) => {
+    const setter = kind === 'deal' ? setDeals : setOffers;
     const rows = kind === 'deal' ? dealRows : offerRows;
-    const order = rows.length ? Math.max(...rows.map((r) => r.order ?? 0)) + 1 : 0;
-    const id = uid();
-    const entry = {
-      id,
-      menuItemId: itemId,
-      order,
-      ...(kind === 'offer' ? { discountPercent: 20 } : {}),
-    };
-    const prev = kind === 'deal' ? deals : offers;
-    setPicker(null);
-    // Optimistic  -  the row appears instantly, saving happens in the background.
-    if (kind === 'deal') setDeals((l) => [...l, entry]);
-    else setOffers((l) => [...l, entry]);
-    const save = kind === 'deal' ? addDeal : addOffer;
-    save(itemId, id).catch((err) => {
-      if (kind === 'deal') setDeals(prev);
-      else setOffers(prev);
-      toast.error(err.message);
-      toast.error(`"${it.name}" could not be saved`);
+    let nextOrder = rows.length ? Math.max(...rows.map((r) => r.order ?? 0)) + 1 : 0;
+    itemIds.forEach((itemId) => {
+      const id = uid();
+      const entry = {
+        id,
+        menuItemId: itemId,
+        order: nextOrder,
+        ...(kind === 'offer' ? { discountPercent: 20 } : {}),
+      };
+      nextOrder += 1;
+      setter((l) => [...l, entry]);
+      const save = kind === 'offer' ? addOffer.bind(null, itemId, 20) : addDeal.bind(null, itemId);
+      save(id).catch((err) => {
+        setter((l) => l.filter((d) => d.id !== id));
+        toast.error(err.message);
+      });
     });
+  };
+
+  const handleAddSelected = () => {
+    if (!picker || selected.size === 0) return;
+    addEntries(picker.kind, [...selected]);
+    setSelected(new Set());
   };
 
   const move = (kind, row, dir) => {
@@ -316,7 +323,7 @@ export default function DealsPage() {
       />
 
       <Modal open={Boolean(picker)} onClose={() => setPicker(null)} title="Add menu items" wide>
-        <Field label="Search menu items" hint="Only items not already in the list are shown.">
+        <Field label="Search menu items" hint="Tick several items, then add them all at once. Already-added items are hidden.">
           <TextInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -327,29 +334,88 @@ export default function DealsPage() {
         {pickable.length === 0 ? (
           <EmptyState message="No matching items left  -  everything is already added or the search found nothing." />
         ) : (
-          <ul className="mt-4 max-h-96 divide-y divide-neutral-100 overflow-y-auto rounded-xl ring-1 ring-maroon/10">
-            {pickable.map((it) => (
-              <li key={it.id} className="flex items-center gap-3 px-4 py-3">
-                <div className={rowImg}>
-                  <img src={it.imageUrl} alt="" className="h-full w-full object-cover" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-heading text-sm font-bold text-maroon">{it.name}</p>
-                  <p className="truncate text-xs text-neutral-500">
-                    {it.category} · {it.price}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleAdd(it.id)}
-                  className={adminBtnGhost}
-                >
-                  + Add
-                </button>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="mt-2 flex items-center justify-between text-xs text-neutral-500">
+              <span>{pickable.length} item{pickable.length === 1 ? '' : 's'}</span>
+              <button
+                type="button"
+                onClick={() =>
+                  setSelected(
+                    selected.size === pickable.length
+                      ? new Set()
+                      : new Set(pickable.map((it) => it.id))
+                  )
+                }
+                className="font-semibold text-maroon hover:text-orange"
+              >
+                {selected.size === pickable.length ? 'Clear all' : 'Select all'}
+              </button>
+            </div>
+            <ul className="mt-2 max-h-80 divide-y divide-neutral-100 overflow-y-auto rounded-xl ring-1 ring-maroon/10">
+              {pickable.map((it) => {
+                const checked = selected.has(it.id);
+                return (
+                  <li key={it.id}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelected((s) => {
+                          const next = new Set(s);
+                          if (next.has(it.id)) next.delete(it.id);
+                          else next.add(it.id);
+                          return next;
+                        });
+                      }}
+                      className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${
+                        checked ? 'bg-orange/10' : 'hover:bg-neutral-50'
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
+                          checked ? 'border-orange bg-brand-gradient text-white' : 'border-neutral-300 bg-white'
+                        }`}
+                      >
+                        {checked && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </span>
+                      <span className={rowImg}>
+                        <img src={it.imageUrl} alt="" className="h-full w-full object-cover" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-heading text-sm font-bold text-maroon">{it.name}</span>
+                        <span className="block truncate text-xs text-neutral-500">
+                          {it.category} · {it.price}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         )}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-neutral-500">
+            {selected.size} selected  -  they appear instantly, saved in the background.
+          </p>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => setPicker(null)} className={adminBtnGhost}>
+              Done
+            </button>
+            <button
+              type="button"
+              onClick={handleAddSelected}
+              disabled={selected.size === 0}
+              className={adminBtn}
+            >
+              + Add {selected.size || ''}
+            </button>
+          </div>
+        </div>
       </Modal>
 
       <ConfirmDialog
