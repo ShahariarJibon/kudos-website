@@ -21,6 +21,7 @@ import {
   fetchMenuItems,
   healOrdering,
   swapOrder,
+  uid,
   updateOffer,
 } from '../../services/adminService';
 
@@ -28,8 +29,9 @@ const moveBtn =
   'inline-flex h-10 w-10 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-maroon disabled:opacity-30';
 const rowImg = 'h-12 w-12 shrink-0 overflow-hidden rounded-lg ring-1 ring-maroon/10';
 
-function OfferPercentEditor({ row, saving, onSave }) {
+function OfferPercentEditor({ row, onSave }) {
   const [value, setValue] = useState(row.discountPercent);
+  const dirty = Number(value) !== row.discountPercent;
   return (
     <div className="flex items-center gap-2">
       <Field label="Discount %" className="w-28">
@@ -48,17 +50,15 @@ function OfferPercentEditor({ row, saving, onSave }) {
       <button
         type="button"
         onClick={() => onSave(value)}
-        disabled={saving || Number(value) === row.discountPercent}
+        disabled={!dirty}
         aria-label={`Save discount for ${row.name}`}
-        className="mt-6 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-orange/10 text-maroon transition-colors hover:bg-brand-gradient hover:text-white disabled:opacity-40"
+        className={`mt-6 inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors disabled:opacity-30 ${
+          dirty ? 'bg-orange/10 text-maroon hover:bg-brand-gradient hover:text-white' : 'bg-neutral-100 text-neutral-400'
+        }`}
       >
-        {saving ? (
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-maroon/20 border-t-maroon" />
-        ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </button>
     </div>
   );
@@ -110,10 +110,7 @@ export default function DealsPage() {
   const [loadError, setLoadError] = useState(null);
   const [picker, setPicker] = useState(null);
   const [search, setSearch] = useState('');
-  const [adding, setAdding] = useState(false);
-  const [savingPercent, setSavingPercent] = useState(null);
   const [deleting, setDeleting] = useState(null);
-  const [deleteBusy, setDeleteBusy] = useState(false);
 
   const load = async () => {
     const [d, i] = await Promise.all([fetchDeals(), fetchMenuItems()]);
@@ -174,25 +171,31 @@ export default function DealsPage() {
     setSearch('');
   };
 
-  const handleAdd = async (itemId) => {
+  const handleAdd = (itemId) => {
     if (!picker) return;
-    setAdding(true);
-    try {
-      const it = itemById.get(itemId);
-      if (picker.kind === 'deal') {
-        await addDeal(itemId);
-        toast.success(`"${it.name}" added to hot deals`);
-      } else {
-        await addOffer(itemId, 20);
-        toast.success(`"${it.name}" added to Today's Offer`);
-      }
-      setPicker(null);
-      await load();
-    } catch (err) {
+    const kind = picker.kind;
+    const it = itemById.get(itemId);
+    const rows = kind === 'deal' ? dealRows : offerRows;
+    const order = rows.length ? Math.max(...rows.map((r) => r.order ?? 0)) + 1 : 0;
+    const id = uid();
+    const entry = {
+      id,
+      menuItemId: itemId,
+      order,
+      ...(kind === 'offer' ? { discountPercent: 20 } : {}),
+    };
+    const prev = kind === 'deal' ? deals : offers;
+    setPicker(null);
+    // Optimistic  -  the row appears instantly, saving happens in the background.
+    if (kind === 'deal') setDeals((l) => [...l, entry]);
+    else setOffers((l) => [...l, entry]);
+    const save = kind === 'deal' ? addDeal : addOffer;
+    save(itemId, id).catch((err) => {
+      if (kind === 'deal') setDeals(prev);
+      else setOffers(prev);
       toast.error(err.message);
-    } finally {
-      setAdding(false);
-    }
+      toast.error(`"${it.name}" could not be saved`);
+    });
   };
 
   const move = (kind, row, dir) => {
@@ -219,35 +222,34 @@ export default function DealsPage() {
     });
   };
 
-  const savePercent = async (row, value) => {
+  const savePercent = (row, value) => {
     const pct = Math.max(1, Math.min(99, Math.round(Number(value) || 0)));
-    if (pct === row.discountPercent) return;
-    setSavingPercent(row.id);
-    try {
-      await updateOffer(row.id, pct);
-      toast.success('Discount updated');
-      await load();
-    } catch (err) {
+    const current = (offers || []).find((d) => d.id === row.id);
+    if (!current || pct === Number(current.discountPercent)) return;
+    const prevOffers = offers;
+    // Optimistic  -  update the badge value instantly, save in the background.
+    setOffers((l) => l.map((d) => (d.id === row.id ? { ...d, discountPercent: pct } : d)));
+    updateOffer(row.id, pct).catch((err) => {
+      setOffers(prevOffers);
       toast.error(err.message);
-    } finally {
-      setSavingPercent(null);
-    }
+    });
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!deleting) return;
-    setDeleteBusy(true);
-    try {
-      if (deleting.kind === 'deal') await deleteDeal(deleting.id);
-      else await deleteOffer(deleting.id);
-      toast.success('Removed');
-      setDeleting(null);
-      await load();
-    } catch (err) {
+    const { kind, id, name } = deleting;
+    const setter = kind === 'deal' ? setDeals : setOffers;
+    const list = kind === 'deal' ? deals : offers;
+    const entry = (list || []).find((d) => d.id === id);
+    const remove = kind === 'deal' ? deleteDeal : deleteOffer;
+    setDeleting(null);
+    // Optimistic  -  the row disappears instantly, deletion happens in the background.
+    setter((l) => l.filter((d) => d.id !== id));
+    remove(id).catch((err) => {
+      if (entry) setter((l) => [...l, entry]);
       toast.error(err.message);
-    } finally {
-      setDeleteBusy(false);
-    }
+      toast.error(`"${name}" could not be removed`);
+    });
   };
 
   if (!deals || !offers) {
@@ -281,7 +283,7 @@ export default function DealsPage() {
               onDelete={() => setDeleting({ kind: badgeClass, id: row.id, name: row.name })}
             >
               {badgeClass === 'offer' && (
-                <OfferPercentEditor row={row} saving={savingPercent === row.id} onSave={(v) => savePercent(row, v)} />
+                <OfferPercentEditor row={row} onSave={(v) => savePercent(row, v)} />
               )}
             </ListRow>
           ))}
@@ -340,10 +342,9 @@ export default function DealsPage() {
                 <button
                   type="button"
                   onClick={() => handleAdd(it.id)}
-                  disabled={adding}
                   className={adminBtnGhost}
                 >
-                  {adding ? 'Adding…' : '+ Add'}
+                  + Add
                 </button>
               </li>
             ))}
@@ -355,7 +356,6 @@ export default function DealsPage() {
         open={Boolean(deleting)}
         title="Remove from list?"
         message={`"${deleting?.name}" will be removed from this section on the home page. The menu item itself is not deleted.`}
-        busy={deleteBusy}
         onConfirm={handleDelete}
         onCancel={() => setDeleting(null)}
       />

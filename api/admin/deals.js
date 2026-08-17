@@ -30,7 +30,13 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'This item is already in the list' });
       }
 
-      const doc = col.doc();
+      // Client-supplied id lets the admin UI add rows instantly (optimistic);
+      // fall back to a server-generated id for other callers.
+      const doc = body.id ? col.doc(String(body.id)) : col.doc();
+      const taken = body.id ? await doc.get() : null;
+      if (taken && taken.exists) {
+        return res.status(409).json({ error: 'This id already exists  -  refresh and try again' });
+      }
       await doc.set({
         menuItemId: body.menuItemId,
         ...(body.kind === 'offer'

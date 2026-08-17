@@ -129,9 +129,9 @@ export const saveBusinessInfo = (data) => put('/business-info', data);
 /* ------------------------- Deals & offers ---------------------------- */
 
 export const fetchDeals = () => get('/deals');
-export const addDeal = (menuItemId) => post('/deals', { kind: 'deal', menuItemId });
-export const addOffer = (menuItemId, discountPercent) =>
-  post('/deals', { kind: 'offer', menuItemId, discountPercent });
+export const addDeal = (menuItemId, id) => post('/deals', { kind: 'deal', menuItemId, id });
+export const addOffer = (menuItemId, discountPercent, id) =>
+  post('/deals', { kind: 'offer', menuItemId, discountPercent, id });
 export const updateOffer = (id, discountPercent) =>
   put('/deals', { kind: 'offer', id, discountPercent });
 export const deleteDeal = (id) => del(`/deals?kind=deal&id=${encodeURIComponent(id)}`);
